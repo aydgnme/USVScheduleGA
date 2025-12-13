@@ -3,7 +3,7 @@ package com.dm.service;
 import com.dm.data.repository.RoomRepository;
 import com.dm.dto.RoomDto;
 import com.dm.mapper.RoomMapper;
-import com.dm.model.Room;
+import com.dm.data.entity.Room;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,5 +46,15 @@ public class RoomService {
     public RoomDto save(RoomDto dto) {
         Room room = mapper.toEntity(dto);
         return mapper.toDto(repository.save(room));
+    }
+
+    public List<RoomDto> findAll() {
+        return repository.findAll().stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public void delete(RoomDto room) {
+        repository.delete(mapper.toEntity(room));
     }
 }

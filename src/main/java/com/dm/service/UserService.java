@@ -1,11 +1,13 @@
 package com.dm.service;
 
+import com.dm.data.entity.Role;
+import com.dm.data.entity.User;
 import com.dm.data.repository.UserRepository;
 import com.dm.dto.UserDto;
 import com.dm.mapper.UserMapper;
-import com.dm.model.Role;
-import com.dm.model.User;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,28 +27,36 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Spring Security entrypoint
+    /**
+     * Spring Security entrypoint — load user for authentication
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = repository.findByEmail(email);
-        if (user == null) throw new UsernameNotFoundException("User not found: " + email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found: " + email);
+        }
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
                 .password(user.getPassword())
                 .roles(user.getRole().name())
                 .disabled(!user.isEnabled())
                 .build();
     }
 
-    // Normal CRUD operations for UI/API
-
+    /**
+     * Returns all users as DTO list
+     */
     public List<UserDto> getAll() {
         return repository.findAll().stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns users waiting for secretary approval
+     */
     public List<UserDto> getPendingApprovals() {
         return repository.findAll().stream()
                 .filter(u -> !u.isEnabled())
@@ -54,15 +64,21 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Registers a new teacher (inactive until approved)
+     */
     public UserDto registerTeacher(String email, String rawPassword) {
         User user = new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole(Role.TEACHER);
-        user.setEnabled(false); // bekliyor
+        user.setEnabled(false); // waiting approval
         return mapper.toDto(repository.save(user));
     }
 
+    /**
+     * Registers a secretary (auto-approved)
+     */
     public UserDto registerSecretary(String email, String rawPassword) {
         User user = new User();
         user.setEmail(email);
@@ -72,8 +88,12 @@ public class UserService implements UserDetailsService {
         return mapper.toDto(repository.save(user));
     }
 
+    /**
+     * Approves a pending teacher (activated by secretary)
+     */
     public void approveUser(Long id) {
-        User user = repository.findById(id).orElseThrow();
+        User user = repository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
         user.setEnabled(true);
         repository.save(user);
     }

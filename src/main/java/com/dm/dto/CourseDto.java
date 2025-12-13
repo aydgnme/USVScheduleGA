@@ -4,7 +4,7 @@ import lombok.Value;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.dm.model.Course}
+ * DTO for {@link com.dm.data.entity.Course}
  */
 @Value
 public class CourseDto implements Serializable {

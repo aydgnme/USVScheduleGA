@@ -3,7 +3,7 @@ package com.dm.service;
 import com.dm.data.repository.CourseRepository;
 import com.dm.dto.CourseDto;
 import com.dm.mapper.CourseMapper;
-import com.dm.model.Course;
+import com.dm.data.entity.Course;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,13 +32,13 @@ public class CourseService {
     }
 
     public List<CourseDto> findByTeacher(Long teacherId) {
-        return repository.findAllByTeacher_Id(teacherId).stream()
+        return repository.findAllByTeacherId(teacherId).stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public List<CourseDto> findByGroup(Long groupId) {
-        return repository.findAllByGroup_Id(groupId).stream()
+        return repository.findAllByGroupId(groupId).stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -46,5 +46,15 @@ public class CourseService {
     public CourseDto save(CourseDto dto) {
         Course course = mapper.toEntity(dto);
         return mapper.toDto(repository.save(course));
+    }
+
+    public List<CourseDto> findAll() {
+        return repository.findAll().stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public void delete(CourseDto course) {
+        repository.delete(mapper.toEntity(course));
     }
 }

@@ -1,12 +1,11 @@
 package com.dm.dto;
 
-import com.dm.model.Room;
 import lombok.Value;
 
 import java.io.Serializable;
 
 /**
- * DTO for {@link Room}
+ * DTO for {@link com.dm.data.entity.Room}
  */
 @Value
 public class RoomDto implements Serializable {

@@ -1,9 +1,9 @@
 package com.dm.service;
 
+import com.dm.data.entity.Teacher;
 import com.dm.data.repository.TeacherRepository;
 import com.dm.dto.TeacherDto;
 import com.dm.mapper.TeacherMapper;
-import com.dm.model.Teacher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

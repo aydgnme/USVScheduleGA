@@ -3,7 +3,7 @@ package com.dm.service;
 import com.dm.data.repository.TimeslotRepository;
 import com.dm.dto.TimeslotDto;
 import com.dm.mapper.TimeslotMapper;
-import com.dm.model.Timeslot;
+import com.dm.data.entity.Timeslot;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,5 +40,9 @@ public class TimeslotService {
     public TimeslotDto save(TimeslotDto dto) {
         Timeslot slot = mapper.toEntity(dto);
         return mapper.toDto(repository.save(slot));
+    }
+
+    public void delete(TimeslotDto dto) {
+        repository.delete(mapper.toEntity(dto));
     }
 }

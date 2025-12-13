@@ -1,12 +1,11 @@
 package com.dm.dto;
 
-import com.dm.model.Timeslot;
 import lombok.Value;
 
 import java.io.Serializable;
 
 /**
- * DTO for {@link Timeslot}
+ * DTO for {@link com.dm.data.entity.Timeslot}
  */
 @Value
 public class TimeslotDto implements Serializable {
