@@ -37,6 +37,14 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
+    public List<CourseDto> getCoursesByTeacherEmail(String email) {
+        return repository.findAll().stream()
+                .filter(course -> course.getTeacher() != null && 
+                                  course.getTeacher().getEmail().equals(email))
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public List<CourseDto> findByGroup(Long groupId) {
         return repository.findAllByGroupId(groupId).stream()
                 .map(mapper::toDto)

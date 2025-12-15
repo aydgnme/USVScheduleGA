@@ -50,4 +50,8 @@ public class TeacherService {
         Teacher teacher = mapper.toEntity(dto);
         return mapper.toDto(repository.save(teacher));
     }
+
+    public TeacherDto update(TeacherDto dto) {
+        return save(dto);
+    }
 }

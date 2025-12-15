@@ -67,7 +67,9 @@ public class MainLayout extends AppLayout {
             drawer.add(new RouterLink("Rooms", RoomView.class));
         } else if (hasRole("ROLE_TEACHER")) {
             drawer.add(new RouterLink("Dashboard", TeacherDashboardView.class));
-            drawer.add(new RouterLink("Courses", CourseView.class));
+            drawer.add(new RouterLink("My Courses", com.dm.view.teacher.TeacherCoursesView.class));
+            drawer.add(new RouterLink("My Schedule", com.dm.view.teacher.TeacherScheduleView.class));
+            drawer.add(new RouterLink("Availability", com.dm.view.teacher.TeacherAvailabilityView.class));
         } else {
             // Fallback for authenticated users without a specific role
             drawer.add(new RouterLink("Dashboard", DashboardView.class));
