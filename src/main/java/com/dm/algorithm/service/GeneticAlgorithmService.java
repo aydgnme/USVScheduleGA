@@ -11,9 +11,14 @@ import java.util.List;
 @Service
 public class GeneticAlgorithmService {
 
-    @Autowired private SelectionService selectionService;
-    @Autowired private CrossoverService crossoverService;
-    @Autowired private MutationService mutationService;
+    @Autowired
+    private SelectionService selectionService;
+    @Autowired
+    private CrossoverService crossoverService;
+    @Autowired
+    private MutationService mutationService;
+    @Autowired
+    private ScheduleEvaluator scheduleEvaluator;
 
     private double mutationRate = 0.01;
     private int populationSize = 100;
@@ -41,7 +46,7 @@ public class GeneticAlgorithmService {
 
         // 3. Evaluate New Generation
         for (Chromosome c : nextGeneration.getChromosomes()) {
-            FitnessResult res = ScheduleEvaluator.evaluate(c);
+            FitnessResult res = scheduleEvaluator.evaluate(c);
             c.setFitness(res.getFitnessScore());
         }
 
@@ -49,10 +54,27 @@ public class GeneticAlgorithmService {
     }
 
     // Getters and Setters for Configuration
-    public double getMutationRate() { return mutationRate; }
-    public void setMutationRate(double mutationRate) { this.mutationRate = mutationRate; }
-    public int getPopulationSize() { return populationSize; }
-    public void setPopulationSize(int populationSize) { this.populationSize = populationSize; }
-    public int getElitismCount() { return elitismCount; }
-    public void setElitismCount(int elitismCount) { this.elitismCount = elitismCount; }
+    public double getMutationRate() {
+        return mutationRate;
+    }
+
+    public void setMutationRate(double mutationRate) {
+        this.mutationRate = mutationRate;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public void setPopulationSize(int populationSize) {
+        this.populationSize = populationSize;
+    }
+
+    public int getElitismCount() {
+        return elitismCount;
+    }
+
+    public void setElitismCount(int elitismCount) {
+        this.elitismCount = elitismCount;
+    }
 }
