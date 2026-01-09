@@ -5,9 +5,9 @@ import com.dm.dto.TeacherDto;
 import com.dm.service.CourseService;
 import com.dm.service.TeacherService;
 import com.dm.view.layout.MainLayout;
+import com.dm.view.components.GoogleIcon;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
+
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -39,20 +39,29 @@ public class TeacherDashboardView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
 
-        H1 header = new H1("👩‍🏫 Teacher Dashboard");
-        Paragraph welcome = new Paragraph(
-                "Welcome to your teaching dashboard. Quick access to your courses and schedule.");
-        welcome.addClassNames(LumoUtility.TextColor.SECONDARY);
+        // Minimal Header with Icon
+        HorizontalLayout header = new HorizontalLayout();
+        header.setAlignItems(Alignment.CENTER);
+        GoogleIcon dashIcon = new GoogleIcon("dashboard");
+        dashIcon.getStyle().set("font-size", "32px");
+        header.add(dashIcon);
+        // Note: Removing text "Teacher Dashboard" and "Welcome" as per "yazilari yok
+        // et"
 
         // Navigation cards
         HorizontalLayout navigationCards = createNavigationCards();
 
         // Course overview section
-        H2 coursesHeader = new H2("📚 My Courses");
+        HorizontalLayout coursesHeader = new HorizontalLayout();
+        coursesHeader.setAlignItems(Alignment.CENTER);
+        GoogleIcon coursesIcon = new GoogleIcon("library_books");
+        coursesIcon.getStyle().set("font-size", "24px");
+        coursesHeader.add(coursesIcon); // Icon only header
+
         courseListLayout.setPadding(false);
         courseListLayout.setSpacing(true);
 
-        add(header, welcome, navigationCards, coursesHeader, courseListLayout);
+        add(header, navigationCards, coursesHeader, courseListLayout);
 
         loadDashboardData();
     }
@@ -61,45 +70,35 @@ public class TeacherDashboardView extends VerticalLayout {
         HorizontalLayout cards = new HorizontalLayout();
         cards.setWidthFull();
         cards.setSpacing(true);
+        cards.setJustifyContentMode(JustifyContentMode.CENTER); // Center them
 
         cards.add(
-                createNavigationCard("My Courses", "View all courses you teach",
-                        VaadinIcon.BOOK, "teacher/courses"),
-                createNavigationCard("My Schedule", "View your weekly schedule",
-                        VaadinIcon.CALENDAR, "teacher/schedule"),
-                createNavigationCard("Availability", "Set your teaching preferences",
-                        VaadinIcon.CLOCK, "teacher/availability"));
+                createIconNavigationCard("class", "teacher/courses", "My Courses"),
+                createIconNavigationCard("calendar_month", "teacher/schedule", "My Schedule"),
+                createIconNavigationCard("event_available", "teacher/availability", "Availability"));
 
         return cards;
     }
 
-    private VerticalLayout createNavigationCard(String title, String description,
-            VaadinIcon icon, String route) {
+    private VerticalLayout createIconNavigationCard(String iconName, String route, String tooltip) {
         VerticalLayout card = new VerticalLayout();
         card.addClassNames(
                 LumoUtility.Background.CONTRAST_5,
                 LumoUtility.BorderRadius.MEDIUM,
-                LumoUtility.Padding.LARGE);
-        card.setWidth("33%");
+                "card-hover"); // Custom class for hover effect
+        card.setWidth("150px"); // Fixed square-ish size
+        card.setHeight("150px");
         card.setAlignItems(Alignment.CENTER);
+        card.setJustifyContentMode(JustifyContentMode.CENTER);
 
-        Icon cardIcon = icon.create();
-        cardIcon.setSize("48px");
+        GoogleIcon cardIcon = new GoogleIcon(iconName);
+        cardIcon.getStyle().set("font-size", "64px"); // Large Icon
         cardIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
 
-        H3 cardTitle = new H3(title);
-        cardTitle.addClassNames(LumoUtility.Margin.NONE);
+        // Tooltip for accessibility/usability since text is gone
+        card.getElement().setAttribute("title", tooltip);
 
-        Paragraph cardDescription = new Paragraph(description);
-        cardDescription.addClassNames(
-                LumoUtility.TextColor.SECONDARY,
-                LumoUtility.FontSize.SMALL,
-                LumoUtility.TextAlignment.CENTER);
-
-        Span linkText = new Span("Go →");
-        linkText.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.PRIMARY);
-
-        card.add(cardIcon, cardTitle, cardDescription, linkText);
+        card.add(cardIcon);
 
         // Make the entire card clickable
         card.getStyle().set("cursor", "pointer");
@@ -112,16 +111,10 @@ public class TeacherDashboardView extends VerticalLayout {
         String teacherEmail = getCurrentUserEmail();
 
         if (teacherEmail == null) {
-            Notification.show("Session expired. Please login again.", 3000, Notification.Position.MIDDLE)
+            Notification.show("Session expired.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             getUI().ifPresent(ui -> ui.navigate("login"));
             return;
-        }
-
-        // Load teacher info
-        TeacherDto teacher = teacherService.findByEmail(teacherEmail);
-        if (teacher != null) {
-            // Could display teacher-specific info here if needed
         }
 
         // Load courses for the specific teacher
@@ -145,8 +138,9 @@ public class TeacherDashboardView extends VerticalLayout {
         card.setWidthFull();
         card.setAlignItems(Alignment.CENTER);
 
-        Icon bookIcon = VaadinIcon.BOOK.create();
+        GoogleIcon bookIcon = new GoogleIcon("menu_book");
         bookIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        bookIcon.getStyle().set("font-size", "24px");
 
         VerticalLayout details = new VerticalLayout();
         details.setPadding(false);

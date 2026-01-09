@@ -13,6 +13,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.security.core.Authentication;
+import com.dm.view.components.GoogleIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -35,14 +40,34 @@ public class TeacherAvailabilityView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
 
-        H1 header = new H1("⏰ My Availability");
-        Paragraph description = new Paragraph(
-            "Configure your teaching availability preferences. " +
-            "This information helps the scheduler optimize course assignments."
-        );
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        add(header, description, availabilityForm);
-        
+        GoogleIcon headerIcon = new GoogleIcon("event_available");
+        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        headerIcon.getStyle().set("font-size", "2.5rem"); // Match H1 size roughly
+
+        H1 header = new H1("My Availability");
+        header.addClassNames(LumoUtility.Margin.NONE);
+
+        headerLayout.add(headerIcon, header);
+
+        Paragraph description = new Paragraph(
+                "Configure your teaching availability preferences. " +
+                        "This information helps the scheduler optimize course assignments.");
+        description.addClassName(LumoUtility.TextColor.SECONDARY);
+
+        // Card Wrapper
+        VerticalLayout card = new VerticalLayout();
+        card.addClassNames("card"); // Uses the .card style from CSS
+        card.setPadding(true);
+        card.setSpacing(true);
+        card.setMaxWidth("800px"); // Limit width for better readability on large screens
+
+        card.add(description, availabilityForm);
+
+        add(headerLayout, card);
+
         // Setup button listeners
         availabilityForm.getSaveButton().addClickListener(e -> saveAvailability());
         availabilityForm.getCancelButton().addClickListener(e -> loadAvailability());
@@ -52,7 +77,7 @@ public class TeacherAvailabilityView extends VerticalLayout {
 
     private void loadAvailability() {
         String teacherEmail = getCurrentUserEmail();
-        
+
         if (teacherEmail == null) {
             Notification.show("Session expired. Please login again.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -61,9 +86,9 @@ public class TeacherAvailabilityView extends VerticalLayout {
         }
 
         currentTeacher = teacherService.findByEmail(teacherEmail);
-        
+
         if (currentTeacher == null) {
-            Notification.show("Teacher profile not found. Please contact administration.", 
+            Notification.show("Teacher profile not found. Please contact administration.",
                     3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             return;
@@ -75,7 +100,7 @@ public class TeacherAvailabilityView extends VerticalLayout {
     private void saveAvailability() {
         try {
             TeacherDto updatedTeacher = availabilityForm.getUpdatedTeacher();
-            
+
             if (updatedTeacher == null) {
                 Notification.show("No teacher data to save.", 3000, Notification.Position.MIDDLE)
                         .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -86,14 +111,13 @@ public class TeacherAvailabilityView extends VerticalLayout {
             currentTeacher = updatedTeacher;
 
             Notification notification = Notification.show(
-                "✅ Availability preferences saved successfully!", 
-                3000, 
-                Notification.Position.TOP_CENTER
-            );
+                    "✅ Availability preferences saved successfully!",
+                    3000,
+                    Notification.Position.TOP_CENTER);
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
         } catch (Exception e) {
-            Notification.show("Error saving availability: " + e.getMessage(), 
+            Notification.show("Error saving availability: " + e.getMessage(),
                     5000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }

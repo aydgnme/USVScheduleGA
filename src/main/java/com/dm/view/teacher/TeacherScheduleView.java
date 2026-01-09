@@ -11,6 +11,10 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.dm.view.components.GoogleIcon;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,18 +40,28 @@ public class TeacherScheduleView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
 
-        H1 header = new H1("📅 My Weekly Schedule");
-        Paragraph description = new Paragraph(
-            "Your complete teaching schedule showing all assigned time slots, courses, and rooms."
-        );
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        add(header, description, scheduleGrid);
+        GoogleIcon headerIcon = new GoogleIcon("calendar_month");
+        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        headerIcon.getStyle().set("font-size", "2.5rem");
+
+        H1 header = new H1("My Weekly Schedule");
+        header.addClassNames(LumoUtility.Margin.NONE);
+
+        headerLayout.add(headerIcon, header);
+
+        Paragraph description = new Paragraph(
+                "Your complete teaching schedule showing all assigned time slots, courses, and rooms.");
+
+        add(headerLayout, description, scheduleGrid);
         loadSchedule();
     }
 
     private void loadSchedule() {
         String teacherEmail = getCurrentUserEmail();
-        
+
         if (teacherEmail == null) {
             Notification.show("Session expired. Please login again.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -56,13 +70,13 @@ public class TeacherScheduleView extends VerticalLayout {
         }
 
         List<ScheduleEntryDto> scheduleItems = scheduleService.getByTeacherEmail(teacherEmail);
-        
+
         if (scheduleItems.isEmpty()) {
-            Notification.show("No schedule entries found. Your schedule may not be finalized yet.", 
+            Notification.show("No schedule entries found. Your schedule may not be finalized yet.",
                     3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_CONTRAST);
         }
-        
+
         scheduleGrid.setScheduleItems(scheduleItems);
     }
 

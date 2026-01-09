@@ -1,19 +1,170 @@
-/*
-   CSS styling examples for the Vaadin app.
+@import url('./main-layout.css');
 
-   Visit https://vaadin.com/docs/styling/application-theme/ for more information.
-*/
+/* Clarity-like Design Tokens */
+:host,
+:root {
+    /* --- Neutral Palette (Clarity Guidelines) --- */
+    --clarity-bg-color: #FAFAFA;
+    /* Lightest Grey */
+    --clarity-surface-color: #HOT;
+    /* Pure White cards */
+    --clarity-border-color: #DDDDDD;
+    /* Subtle borders */
+    --clarity-text-color: #333333;
+    /* Dark Grey text */
+    --clarity-text-secondary: #737373;
+    /* Muted text */
 
-/* Example: CSS class name to center align the content . */
-.centered-content {
-  margin: 0 auto;
-  max-width: 250px;
+    /* --- Brand / Accent Palette --- */
+    --clarity-primary: #0072A3;
+    /* Deep Blue (Action) */
+    --clarity-primary-hover: #005A82;
+    /* Darker Blue */
+    --clarity-sidenav-bg: #1B2B32;
+    /* Dark Slate (Navigation) */
+    --clarity-sidenav-text: #E8E8E8;
+    /* Light Grey text on Dark */
+    --clarity-sidenav-hover: #2C3E45;
+    /* Slightly lighter slate */
+
+    /* --- Status Colors --- */
+    --clarity-success: #318700;
+    --clarity-warning: #FFD100;
+    /* Use with dark text */
+    --clarity-danger: #E02200;
+
+    /* --- Spacing Scale --- */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+
+    /* --- Typography --- */
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+
+    /* --- Components --- */
+    --app-header-height: 64px;
+    --app-drawer-width: 260px;
+    --clarity-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --clarity-shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Example: the style is applied only to the textfields which have the `bordered` class name. */
-vaadin-text-field.bordered::part(input-field) {
-  box-shadow: inset 0 0 0 1px var(--lumo-contrast-30pct);
-  background-color: var(--lumo-base-color);
+body {
+    background-color: var(--clarity-bg-color);
+    color: var(--clarity-text-color);
+    font-family: var(--font-family);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
 }
 
+/* Global Card Style */
+.card {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    /* Softer border */
+    border-radius: 8px;
+    /* More rounded */
+    box-shadow: var(--clarity-shadow-card);
+    padding: var(--space-lg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Utility Classes */
+.text-primary {
+    color: var(--clarity-primary);
+}
+
+.text-secondary {
+    color: var(--clarity-text-secondary);
+}
+
+.bg-dark {
+    background-color: var(--clarity-sidenav-bg);
+}
+
+.m-0 {
+    margin: 0;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* Clarity Grid Polish */
+.clarity-grid {
+    border: none;
+    box-shadow: var(--clarity-shadow-sm);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+vaadin-grid-cell-content {
+    font-size: var(--font-size-sm);
+    color: var(--clarity-text-color);
+}
+
+/* --- Sidebar Styling Repair --- */
+vaadin-app-layout::part(drawer) {
+    background-color: var(--clarity-sidenav-bg);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+vaadin-side-nav-item {
+    color: var(--clarity-sidenav-text);
+    font-weight: 500;
+}
+
+vaadin-side-nav-item::part(link) {
+    color: var(--clarity-sidenav-text);
+}
+
+vaadin-side-nav-item::part(icon) {
+    color: var(--clarity-sidenav-text);
+    opacity: 0.9;
+}
+
+/* Hover state for items */
+vaadin-side-nav-item:hover::part(link) {
+    background-color: var(--clarity-sidenav-hover);
+    color: #FFFFFF;
+}
+
+/* Selected state - Ensure it overrides */
+vaadin-side-nav-item[current]::part(link) {
+    background-color: var(--clarity-primary);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+vaadin-side-nav-item[current]::part(icon) {
+    color: #FFFFFF;
+    opacity: 1;
+}
+
+/* SideNav Grouping Headers */
+vaadin-side-nav-item[path=""]::part(link) {
+    cursor: default;
+    background-color: transparent !important;
+    color: var(--clarity-text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    padding-top: var(--space-md);
+    pointer-events: none;
+    /* Make grouping headers non-clickable */
+}

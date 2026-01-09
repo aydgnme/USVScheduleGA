@@ -8,9 +8,11 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.Mapping;
 
 /**
- * Mapper for ScheduleEntryEntity ⇄ ScheduleEntryDto and ScheduleEntryEntity ⇄ ScheduleEntry domain.
+ * Mapper for ScheduleEntryEntity ⇄ ScheduleEntryDto and ScheduleEntryEntity ⇄
+ * ScheduleEntry domain.
  */
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {CourseOfferingMapper.class, TimeslotMapper.class, RoomMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = { CourseOfferingMapper.class,
+        TimeslotMapper.class, RoomMapper.class })
 public interface ScheduleEntryMapper {
 
     @Mapping(source = "offering.id", target = "offeringId")

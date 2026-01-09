@@ -14,15 +14,15 @@ import java.util.List;
 @Repository
 public interface ScheduleEntryRepository extends JpaRepository<ScheduleEntryEntity, Long> {
 
-    List<ScheduleEntryEntity> findAllByOfferingId(Long offeringId);
+        List<ScheduleEntryEntity> findAllByOfferingId(Long offeringId);
 
-    List<ScheduleEntryEntity> findAllByTimeslotDayOfWeek(DayOfWeek day);
+        List<ScheduleEntryEntity> findAllByTimeslotDayOfWeek(DayOfWeek day);
 
-    List<ScheduleEntryEntity> findAllByRoomId(Long roomId);
+        List<ScheduleEntryEntity> findAllByRoomId(Long roomId);
 
-    List<ScheduleEntryEntity> findAllByStatus(ScheduleStatus status);
+        List<ScheduleEntryEntity> findAllByStatus(ScheduleStatus status);
 
-    List<ScheduleEntryEntity> findAllByOfferingTeacherId(Long teacherId);
+        List<ScheduleEntryEntity> findAllByOfferingTeacherId(Long teacherId);
 
-    List<ScheduleEntryEntity> findAllByOfferingGroupId(Long groupId);
+        List<ScheduleEntryEntity> findAllByOfferingGroupId(Long groupId);
 }

@@ -1,0 +1,52 @@
+/* Main Layout Structure */
+
+/* Header */
+vaadin-app-layout::part(navbar) {
+    background-color: #FFFFFF;
+    border-bottom: 2px solid var(--clarity-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: var(--app-header-height);
+    padding: 0 var(--space-md);
+}
+
+/* Drawer / SideNav */
+vaadin-app-layout::part(drawer) {
+    background-color: var(--clarity-sidenav-bg);
+    border-right: none;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Links */
+vaadin-router-link {
+    display: flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    color: #A0B1B8;
+    /* Muted slate */
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    border-left: 3px solid transparent;
+    font-weight: 500;
+}
+
+vaadin-router-link:hover {
+    background-color: var(--clarity-sidenav-hover);
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+vaadin-router-link[highlight] {
+    background-color: var(--clarity-sidenav-hover);
+    color: #FFFFFF;
+    border-left-color: var(--clarity-primary);
+    /* Active indicator */
+}
+
+/* Header Text */
+.app-header-title {
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    color: var(--clarity-text-color);
+    margin-left: var(--space-sm);
+    font-size: var(--font-size-lg);
+}

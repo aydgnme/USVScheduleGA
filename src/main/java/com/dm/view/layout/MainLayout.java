@@ -11,15 +11,17 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.RouterLink;
-
+import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.sidenav.SideNav;
+import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.dm.view.components.GoogleIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 
 public class MainLayout extends AppLayout {
 
@@ -30,51 +32,69 @@ public class MainLayout extends AppLayout {
 
     private void createHeader() {
         H1 logo = new H1("USV Schedule GA");
-        logo.addClassNames(
-            LumoUtility.FontSize.LARGE,
-            LumoUtility.Margin.MEDIUM);
+        logo.addClassNames("app-header-title");
 
         Anchor logoutLink = new Anchor("/logout", "Logout");
+        logoutLink.addClassName("text-secondary");
         logoutLink.getElement().setAttribute("router-ignore", "true");
 
         HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo, logoutLink);
 
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
-        header.expand(logo); // Make the logo take up most of the space
+        header.expand(logo);
         header.setWidth("100%");
-        header.addClassNames(
-            LumoUtility.Padding.Vertical.NONE,
-            LumoUtility.Padding.Horizontal.MEDIUM);
+        header.addClassName("app-header");
 
         addToNavbar(header);
-
     }
 
     private void createDrawer() {
-        VerticalLayout drawer = new VerticalLayout();
+        SideNav nav = new SideNav();
 
         // Role-specific dashboard entry
         if (hasRole("ROLE_ADMIN")) {
-            drawer.add(new RouterLink("Dashboard", AdminDashboardView.class));
-            drawer.add(new RouterLink("Timeslots", TimeslotView.class));
-            drawer.add(new RouterLink("Courses", CourseView.class));
-            drawer.add(new RouterLink("Rooms", RoomView.class));
+            nav.addItem(new SideNavItem("Dashboard", AdminDashboardView.class, new GoogleIcon("dashboard")));
+
+            SideNavItem managementGroup = new SideNavItem("Management");
+            managementGroup.setPrefixComponent(new GoogleIcon("admin_panel_settings"));
+            managementGroup.addItem(
+                    new SideNavItem("Teachers", com.dm.view.admin.AdminTeachersView.class, new GoogleIcon("school")));
+            managementGroup.addItem(
+                    new SideNavItem("Rooms", com.dm.view.admin.AdminRoomsView.class, new GoogleIcon("meeting_room")));
+            managementGroup.addItem(
+                    new SideNavItem("Groups", com.dm.view.admin.AdminGroupsView.class, new GoogleIcon("groups")));
+            nav.addItem(managementGroup);
+
+            SideNavItem academicGroup = new SideNavItem("Academic");
+            academicGroup.setPrefixComponent(new GoogleIcon("school"));
+            academicGroup.addItem(new SideNavItem("Courses", CourseView.class, new GoogleIcon("menu_book")));
+            academicGroup.addItem(new SideNavItem("Timeslots", TimeslotView.class, new GoogleIcon("schedule")));
+            nav.addItem(academicGroup);
+
         } else if (hasRole("ROLE_SECRETARY")) {
-            drawer.add(new RouterLink("Dashboard", SecretaryDashboardView.class));
-            drawer.add(new RouterLink("Timeslots", TimeslotView.class));
-            drawer.add(new RouterLink("Courses", CourseView.class));
-            drawer.add(new RouterLink("Rooms", RoomView.class));
+            nav.addItem(new SideNavItem("Dashboard", SecretaryDashboardView.class, new GoogleIcon("dashboard")));
+            nav.addItem(new SideNavItem("Timeslots", TimeslotView.class, new GoogleIcon("schedule")));
+            nav.addItem(new SideNavItem("Courses", CourseView.class, new GoogleIcon("menu_book")));
+            nav.addItem(new SideNavItem("Rooms", RoomView.class, new GoogleIcon("meeting_room")));
+
         } else if (hasRole("ROLE_TEACHER")) {
-            drawer.add(new RouterLink("Dashboard", TeacherDashboardView.class));
-            drawer.add(new RouterLink("My Courses", com.dm.view.teacher.TeacherCoursesView.class));
-            drawer.add(new RouterLink("My Schedule", com.dm.view.teacher.TeacherScheduleView.class));
-            drawer.add(new RouterLink("Availability", com.dm.view.teacher.TeacherAvailabilityView.class));
+            nav.addItem(new SideNavItem("Dashboard", TeacherDashboardView.class, new GoogleIcon("dashboard")));
+            nav.addItem(new SideNavItem("My Courses", com.dm.view.teacher.TeacherCoursesView.class,
+                    new GoogleIcon("library_books")));
+            nav.addItem(new SideNavItem("My Schedule", com.dm.view.teacher.TeacherScheduleView.class,
+                    new GoogleIcon("calendar_month")));
+            nav.addItem(new SideNavItem("Availability", com.dm.view.teacher.TeacherAvailabilityView.class,
+                    new GoogleIcon("event_available")));
+
         } else {
             // Fallback for authenticated users without a specific role
-            drawer.add(new RouterLink("Dashboard", DashboardView.class));
+            nav.addItem(new SideNavItem("Dashboard", DashboardView.class, new GoogleIcon("dashboard")));
         }
 
-        addToDrawer(drawer);
+        Scroller scroller = new Scroller(nav);
+        scroller.setClassName(LumoUtility.Padding.SMALL);
+
+        addToDrawer(scroller);
     }
 
     private boolean hasRole(String role) {
@@ -85,5 +105,4 @@ public class MainLayout extends AppLayout {
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
     }
-
 }

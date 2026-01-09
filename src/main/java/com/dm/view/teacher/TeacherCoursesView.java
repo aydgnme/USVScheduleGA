@@ -11,6 +11,10 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.dm.view.components.GoogleIcon;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,11 +40,22 @@ public class TeacherCoursesView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
 
-        H1 header = new H1("📚 My Courses");
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        GoogleIcon headerIcon = new GoogleIcon("library_books");
+        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        headerIcon.getStyle().set("font-size", "2.5rem");
+
+        H1 header = new H1("My Courses");
+        header.addClassNames(LumoUtility.Margin.NONE);
+
+        headerLayout.add(headerIcon, header);
+
         Paragraph description = new Paragraph(
                 "Below are the courses you are currently assigned to teach.");
 
-        add(header, description, courseGrid);
+        add(headerLayout, description, courseGrid);
         loadCourses();
     }
 

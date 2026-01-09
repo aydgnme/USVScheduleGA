@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Service for managing scheduled entries (course assignments to timeslots and rooms).
+ * Service for managing scheduled entries (course assignments to timeslots and
+ * rooms).
  */
 @Service
 public class ScheduleService {
