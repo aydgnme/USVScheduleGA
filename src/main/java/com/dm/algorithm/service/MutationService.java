@@ -1,18 +1,26 @@
 package com.dm.algorithm.service;
 
 import com.dm.algorithm.model.Chromosome;
+import com.dm.algorithm.model.Gene;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Random;
 
-/**
- * Handles mutation of Chromosomes (introducing diversity).
- *
- * TODO: Implement random swaps, room/time shifts, etc.
- */
 @Service
 public class MutationService {
 
-    public Chromosome mutate(Chromosome chromosome) {
-        // TODO: implement mutation
-        return chromosome;
+    private final Random random = new Random();
+
+    public void mutate(Chromosome chromosome, double mutationRate, int totalTimeslots, List<String> roomIds) {
+        for (Gene gene : chromosome.getGenes()) {
+            if (Math.random() < mutationRate) {
+                // Randomly change either the timeslot or the room
+                if (random.nextBoolean()) {
+                    gene.setTimeslot(random.nextInt(totalTimeslots));
+                } else {
+                    gene.setRoomId(roomIds.get(random.nextInt(roomIds.size())));
+                }
+            }
+        }
     }
 }

@@ -1,16 +1,26 @@
 package com.dm.algorithm.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents one possible timetable (solution) in the genetic algorithm.
- * Each Chromosome contains a list of genes (Course assignments).
- *
- * TODO: Implement encode/decode logic for course-time-room assignments.
- */
 public class Chromosome {
     private List<Gene> genes;
     private double fitness;
 
-    // TODO: Implement constructor, getters, setters
+    public Chromosome() {
+        this.genes = new ArrayList<>();
+        this.fitness = 0.0;
+    }
+
+    public Chromosome(List<Gene> genes) {
+        this.genes = genes;
+        this.fitness = 0.0;
+    }
+
+    // Getters and Setters
+    public List<Gene> getGenes() { return genes; }
+    public void setGenes(List<Gene> genes) { this.genes = genes; }
+
+    public double getFitness() { return fitness; }
+    public void setFitness(double fitness) { this.fitness = fitness; }
 }
