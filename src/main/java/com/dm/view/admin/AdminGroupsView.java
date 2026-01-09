@@ -6,6 +6,7 @@ import com.dm.service.GroupService;
 import com.dm.service.SpecializationService;
 import com.dm.view.layout.MainLayout;
 import com.dm.view.components.GoogleIcon;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -54,7 +55,17 @@ public class AdminGroupsView extends VerticalLayout {
         configureGrid();
         configureFilters();
 
-        add(getToolbar(), getContent());
+        // Header
+        HorizontalLayout header = new HorizontalLayout();
+        header.setAlignItems(Alignment.CENTER);
+        GoogleIcon headerIcon = new GoogleIcon("groups");
+        headerIcon.getStyle().set("font-size", "32px");
+        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        com.vaadin.flow.component.html.H2 pageTitle = new com.vaadin.flow.component.html.H2("Manage Groups");
+        pageTitle.addClassNames(LumoUtility.Margin.NONE);
+        header.add(headerIcon, pageTitle);
+
+        add(header, getToolbar(), getContent());
         updateList();
     }
 

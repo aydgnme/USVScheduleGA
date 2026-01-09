@@ -5,6 +5,7 @@ import com.dm.model.types.RoomType;
 import com.dm.service.RoomService;
 import com.dm.view.layout.MainLayout;
 import com.dm.view.components.GoogleIcon;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -41,7 +42,17 @@ public class AdminRoomsView extends VerticalLayout {
         configureGrid();
         configureFilters();
 
-        add(getToolbar(), getContent());
+        // Header
+        HorizontalLayout header = new HorizontalLayout();
+        header.setAlignItems(Alignment.CENTER);
+        GoogleIcon headerIcon = new GoogleIcon("meeting_room");
+        headerIcon.getStyle().set("font-size", "32px");
+        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        com.vaadin.flow.component.html.H2 pageTitle = new com.vaadin.flow.component.html.H2("Manage Rooms");
+        pageTitle.addClassNames(LumoUtility.Margin.NONE);
+        header.add(headerIcon, pageTitle);
+
+        add(header, getToolbar(), getContent());
         updateList();
     }
 

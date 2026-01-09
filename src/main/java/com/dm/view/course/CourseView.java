@@ -15,7 +15,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
 @PermitAll
-@Route(value="courses", layout = MainLayout.class)
+@Route(value = "courses", layout = MainLayout.class)
 @PageTitle("Courses | USV Schedule GA")
 public class CourseView extends VerticalLayout {
     Grid<CourseDto> grid = new Grid<>(CourseDto.class);
@@ -29,7 +29,17 @@ public class CourseView extends VerticalLayout {
         configureGrid();
         configureForm();
 
-        add(getToolbar(), getContent());
+        // Header
+        HorizontalLayout header = new HorizontalLayout();
+        header.setAlignItems(com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER);
+        com.dm.view.components.GoogleIcon headerIcon = new com.dm.view.components.GoogleIcon("menu_book");
+        headerIcon.getStyle().set("font-size", "32px");
+        headerIcon.addClassNames(com.vaadin.flow.theme.lumo.LumoUtility.TextColor.PRIMARY);
+        com.vaadin.flow.component.html.H2 pageTitle = new com.vaadin.flow.component.html.H2("Manage Courses");
+        pageTitle.addClassNames(com.vaadin.flow.theme.lumo.LumoUtility.Margin.NONE);
+        header.add(headerIcon, pageTitle);
+
+        add(header, getToolbar(), getContent());
         updateList();
         closeEditor();
     }

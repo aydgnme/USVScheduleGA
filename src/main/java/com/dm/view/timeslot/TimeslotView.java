@@ -20,7 +20,6 @@ public class TimeslotView extends VerticalLayout {
     Grid<TimeslotDto> grid = new Grid<>(TimeslotDto.class);
     TimeslotForm form;
 
-
     public TimeslotView(TimeslotService timeslotService) {
         this.timeslotService = timeslotService;
         addClassName("timeslot-view");
@@ -28,7 +27,17 @@ public class TimeslotView extends VerticalLayout {
         configureGrid();
         configureForm();
 
-        add(getToolbar(), getContent());
+        // Header
+        HorizontalLayout header = new HorizontalLayout();
+        header.setAlignItems(com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER);
+        com.dm.view.components.GoogleIcon headerIcon = new com.dm.view.components.GoogleIcon("schedule");
+        headerIcon.getStyle().set("font-size", "32px");
+        headerIcon.addClassNames(com.vaadin.flow.theme.lumo.LumoUtility.TextColor.PRIMARY);
+        com.vaadin.flow.component.html.H2 pageTitle = new com.vaadin.flow.component.html.H2("Manage Timeslots");
+        pageTitle.addClassNames(com.vaadin.flow.theme.lumo.LumoUtility.Margin.NONE);
+        header.add(headerIcon, pageTitle);
+
+        add(header, getToolbar(), getContent());
         updateList();
         closeEditor();
     }
@@ -64,14 +73,12 @@ public class TimeslotView extends VerticalLayout {
         closeEditor();
     }
 
-
     private void configureGrid() {
         grid.addClassName("timeslot-grid");
         grid.setSizeFull();
         grid.setColumns("day", "startTime", "endTime");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event ->
-                editTimeslot(event.getValue()));
+        grid.asSingleSelect().addValueChangeListener(event -> editTimeslot(event.getValue()));
     }
 
     private HorizontalLayout getToolbar() {
