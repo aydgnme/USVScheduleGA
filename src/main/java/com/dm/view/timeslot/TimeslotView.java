@@ -57,7 +57,9 @@ public class TimeslotView extends VerticalLayout {
     }
 
     private void deleteTimeslot(TimeslotForm.DeleteEvent event) {
-        timeslotService.delete(event.getTimeslot());
+        if (event.getTimeslot().getId() != null) {
+            timeslotService.delete(event.getTimeslot().getId());
+        }
         updateList();
         closeEditor();
     }
@@ -99,7 +101,7 @@ public class TimeslotView extends VerticalLayout {
 
     private void createTimeslot() {
         grid.asSingleSelect().clear();
-        editTimeslot(new TimeslotDto(null, null, null, null));
+        editTimeslot(new TimeslotDto(null, null, null, null, null));
     }
 
     private void updateList() {

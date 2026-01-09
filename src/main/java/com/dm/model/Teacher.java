@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 /**
- * Represents a teacher in the application's domain model.
+ * Teacher profile in domain layer; auth data stays in User.
  */
 @Data
 @NoArgsConstructor
@@ -13,10 +15,13 @@ import lombok.NoArgsConstructor;
 public class Teacher {
 
     private Long id;
-    private String name;
+    private Long userId;
+    private String firstName;
+    private String lastName;
     private String email;
     private int maxHoursWeekly;
-    private String department;
-    private String availableDays;
+    private Set<Department> departments;
+    private String availableDaysJson;
     private String preferredTime;
+    private String note;
 }

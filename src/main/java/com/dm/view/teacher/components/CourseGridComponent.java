@@ -24,10 +24,9 @@ public class CourseGridComponent extends VerticalLayout {
     private void configureGrid() {
         grid.addColumn(CourseDto::getCode).setHeader("Code").setSortable(true).setAutoWidth(true);
         grid.addColumn(CourseDto::getTitle).setHeader("Title").setSortable(true).setAutoWidth(true);
-        grid.addColumn(CourseDto::getType).setHeader("Type").setSortable(true).setAutoWidth(true);
-        grid.addColumn(CourseDto::getDuration).setHeader("Duration (min)").setSortable(true).setAutoWidth(true);
+        grid.addColumn(CourseDto::getCredits).setHeader("Credits").setSortable(true).setAutoWidth(true);
+        grid.addColumn(CourseDto::getSemester).setHeader("Semester").setSortable(true).setAutoWidth(true);
         grid.addColumn(CourseDto::getParity).setHeader("Week Parity").setSortable(true).setAutoWidth(true);
-        grid.addColumn(CourseDto::getGroupName).setHeader("Group").setSortable(true).setAutoWidth(true);
         
         grid.setSizeFull();
         grid.setAllRowsVisible(false);

@@ -68,8 +68,8 @@ public class AvailabilityForm extends FormLayout {
         this.currentTeacher = teacher;
         
         // Parse available days (comma-separated string to Set)
-        if (teacher.getAvailableDays() != null && !teacher.getAvailableDays().isEmpty()) {
-            Set<String> days = new HashSet<>(Arrays.asList(teacher.getAvailableDays().split(",")));
+        if (teacher.getAvailableDaysJson() != null && !teacher.getAvailableDaysJson().isEmpty()) {
+            Set<String> days = new HashSet<>(Arrays.asList(teacher.getAvailableDaysJson().split(",")));
             availableDaysField.setValue(days);
         } else {
             availableDaysField.clear();
@@ -102,12 +102,15 @@ public class AvailabilityForm extends FormLayout {
 
         return new TeacherDto(
             currentTeacher.getId(),
-            currentTeacher.getName(),
+            currentTeacher.getUserId(),
+            currentTeacher.getFirstName(),
+            currentTeacher.getLastName(),
             currentTeacher.getEmail(),
             maxHours,
-            currentTeacher.getDepartment(),
+            currentTeacher.getDepartments(),
             availableDays,
-            preferredTime
+            preferredTime,
+            currentTeacher.getNote()
         );
     }
 

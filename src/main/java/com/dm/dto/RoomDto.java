@@ -1,16 +1,21 @@
 package com.dm.dto;
 
+import com.dm.model.types.RoomType;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
- * DTO for {@link com.dm.data.entity.Room}
+ * Room DTO with type, building, and feature list.
  */
 @Value
 public class RoomDto implements Serializable {
     Long id;
     String code;
-    int capacity;
-    String type;
+    Integer capacity;
+    RoomType roomType;
+    String building;
+    Integer computers;
+    Set<String> features;
 }

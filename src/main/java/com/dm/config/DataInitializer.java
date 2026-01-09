@@ -1,11 +1,12 @@
 package com.dm.config;
 
 import com.dm.data.entity.Role;
-import com.dm.data.entity.User;
+import com.dm.data.entity.UserEntity;
 import com.dm.data.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -15,11 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class DataInitializer {
 
     @Bean
+    @Order(1)
     CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             // Create admin if not exists
             if (userRepository.findByEmail("admin@usv.ro") == null) {
-                User admin = new User();
+                UserEntity admin = new UserEntity();
                 admin.setEmail("admin@usv.ro");
                 admin.setPassword(passwordEncoder.encode("password"));
                 admin.setRole(Role.ADMIN);
@@ -29,9 +31,9 @@ public class DataInitializer {
             }
 
             // Fix or create secretary
-            User secretary = userRepository.findByEmail("secretary@usv.ro");
+            UserEntity secretary = userRepository.findByEmail("secretary@usv.ro").orElse(null);
             if (secretary == null) {
-                secretary = new User();
+                secretary = new UserEntity();
                 secretary.setEmail("secretary@usv.ro");
                 secretary.setPassword(passwordEncoder.encode("password"));
                 secretary.setRole(Role.SECRETARY);
@@ -48,7 +50,7 @@ public class DataInitializer {
 
             // Create teacher if not exists
             if (userRepository.findByEmail("teacher@usv.ro") == null) {
-                User teacher = new User();
+                UserEntity teacher = new UserEntity();
                 teacher.setEmail("teacher@usv.ro");
                 teacher.setPassword(passwordEncoder.encode("password"));
                 teacher.setRole(Role.TEACHER);

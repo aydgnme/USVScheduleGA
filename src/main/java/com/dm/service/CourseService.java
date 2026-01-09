@@ -1,22 +1,30 @@
 package com.dm.service;
 
+import com.dm.data.entity.CourseEntity;
 import com.dm.data.repository.CourseRepository;
 import com.dm.dto.CourseDto;
+import com.dm.dto.CourseRequestDto;
 import com.dm.mapper.CourseMapper;
-import com.dm.data.entity.Course;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing courses (definitions only; assignments via
+ * CourseOfferingService).
+ */
 @Service
 public class CourseService {
 
     private final CourseRepository repository;
+    private final com.dm.data.repository.CourseOfferingRepository offeringRepository;
     private final CourseMapper mapper;
 
-    public CourseService(CourseRepository repository, CourseMapper mapper) {
+    public CourseService(CourseRepository repository,
+            com.dm.data.repository.CourseOfferingRepository offeringRepository, CourseMapper mapper) {
         this.repository = repository;
+        this.offeringRepository = offeringRepository;
         this.mapper = mapper;
     }
 
@@ -26,43 +34,43 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public CourseDto findByCode(String code) {
-        Course course = repository.findByCode(code);
-        return course != null ? mapper.toDto(course) : null;
+    public List<CourseDto> findAll() {
+        return getAll();
     }
 
-    public List<CourseDto> findByTeacher(Long teacherId) {
-        return repository.findAllByTeacherId(teacherId).stream()
+    public CourseDto findByCode(String code) {
+        return repository.findByCode(code)
                 .map(mapper::toDto)
-                .collect(Collectors.toList());
+                .orElse(null);
+    }
+
+    public CourseDto save(CourseRequestDto request) {
+        CourseEntity entity = mapper.toEntityFromRequest(request);
+        return mapper.toDto(repository.save(entity));
+    }
+
+    public CourseDto update(Long id, CourseRequestDto request) {
+        CourseEntity entity = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Course not found: " + id));
+        entity.setCode(request.getCode());
+        entity.setTitle(request.getTitle());
+        entity.setComponentType(request.getComponentType());
+        entity.setCredits(request.getCredits());
+        entity.setSemester(request.getSemester());
+        entity.setParity(request.getParity());
+        return mapper.toDto(repository.save(entity));
+    }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 
     public List<CourseDto> getCoursesByTeacherEmail(String email) {
-        return repository.findAll().stream()
-                .filter(course -> course.getTeacher() != null && 
-                                  course.getTeacher().getEmail().equals(email))
+        return offeringRepository.findAllByTeacher_User_Email(email)
+                .stream()
+                .map(offering -> offering.getCourse())
+                .distinct() // Return unique courses (even if taught to multiple groups)
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-    public List<CourseDto> findByGroup(Long groupId) {
-        return repository.findAllByGroupId(groupId).stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public CourseDto save(CourseDto dto) {
-        Course course = mapper.toEntity(dto);
-        return mapper.toDto(repository.save(course));
-    }
-
-    public List<CourseDto> findAll() {
-        return repository.findAll().stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public void delete(CourseDto course) {
-        repository.delete(mapper.toEntity(course));
     }
 }

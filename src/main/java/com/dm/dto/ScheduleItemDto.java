@@ -1,11 +1,13 @@
 package com.dm.dto;
 
 import lombok.Value;
+
 import java.io.Serializable;
 
 /**
- * DTO for schedule items representing a course assignment in a specific timeslot and room.
+ * Deprecated: replaced by ScheduleEntryDto.
  */
+@Deprecated
 @Value
 public class ScheduleItemDto implements Serializable {
     Long id;

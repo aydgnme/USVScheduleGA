@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+
 /**
- * Represents a timeslot in the application's domain model.
+ * Domain timeslot with day and time range.
  */
 @Data
 @NoArgsConstructor
@@ -13,7 +16,8 @@ import lombok.NoArgsConstructor;
 public class Timeslot {
 
     private Long id;
-    private String day;
-    private String startTime;
-    private String endTime;
+    private DayOfWeek dayOfWeek;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private Integer durationMinutes;
 }

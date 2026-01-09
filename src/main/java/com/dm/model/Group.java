@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Group {
     private Long id;
-    private String name;
-    private int studyYear;
-    private String specialization;
-    private String faculty;
+    private String code;                 // e.g. LIC1A
+    private Long specializationId;
+    private Integer studyYear;           // 0-4
+    private Integer groupNumber;
+    private String subgroupIndex;        // a, b, c
+    private Integer isModular;           // 0 or 1
+    private Specialization specialization;
 }

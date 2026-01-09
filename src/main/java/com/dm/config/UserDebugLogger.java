@@ -1,6 +1,5 @@
 package com.dm.config;
 
-import com.dm.data.entity.User;
 import com.dm.data.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

@@ -6,7 +6,7 @@ import lombok.Value;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.dm.data.entity.User}
+ * User DTO for auth-facing data.
  */
 @Value
 public class UserDto implements Serializable {

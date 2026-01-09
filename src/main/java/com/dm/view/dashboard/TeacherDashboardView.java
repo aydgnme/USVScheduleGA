@@ -40,7 +40,8 @@ public class TeacherDashboardView extends VerticalLayout {
         setPadding(true);
 
         H1 header = new H1("👩‍🏫 Teacher Dashboard");
-        Paragraph welcome = new Paragraph("Welcome to your teaching dashboard. Quick access to your courses and schedule.");
+        Paragraph welcome = new Paragraph(
+                "Welcome to your teaching dashboard. Quick access to your courses and schedule.");
         welcome.addClassNames(LumoUtility.TextColor.SECONDARY);
 
         // Navigation cards
@@ -62,25 +63,23 @@ public class TeacherDashboardView extends VerticalLayout {
         cards.setSpacing(true);
 
         cards.add(
-            createNavigationCard("My Courses", "View all courses you teach", 
-                VaadinIcon.BOOK, "teacher/courses"),
-            createNavigationCard("My Schedule", "View your weekly schedule", 
-                VaadinIcon.CALENDAR, "teacher/schedule"),
-            createNavigationCard("Availability", "Set your teaching preferences", 
-                VaadinIcon.CLOCK, "teacher/availability")
-        );
+                createNavigationCard("My Courses", "View all courses you teach",
+                        VaadinIcon.BOOK, "teacher/courses"),
+                createNavigationCard("My Schedule", "View your weekly schedule",
+                        VaadinIcon.CALENDAR, "teacher/schedule"),
+                createNavigationCard("Availability", "Set your teaching preferences",
+                        VaadinIcon.CLOCK, "teacher/availability"));
 
         return cards;
     }
 
-    private VerticalLayout createNavigationCard(String title, String description, 
-                                                  VaadinIcon icon, String route) {
+    private VerticalLayout createNavigationCard(String title, String description,
+            VaadinIcon icon, String route) {
         VerticalLayout card = new VerticalLayout();
         card.addClassNames(
-            LumoUtility.Background.CONTRAST_5,
-            LumoUtility.BorderRadius.MEDIUM,
-            LumoUtility.Padding.LARGE
-        );
+                LumoUtility.Background.CONTRAST_5,
+                LumoUtility.BorderRadius.MEDIUM,
+                LumoUtility.Padding.LARGE);
         card.setWidth("33%");
         card.setAlignItems(Alignment.CENTER);
 
@@ -93,10 +92,9 @@ public class TeacherDashboardView extends VerticalLayout {
 
         Paragraph cardDescription = new Paragraph(description);
         cardDescription.addClassNames(
-            LumoUtility.TextColor.SECONDARY,
-            LumoUtility.FontSize.SMALL,
-            LumoUtility.TextAlignment.CENTER
-        );
+                LumoUtility.TextColor.SECONDARY,
+                LumoUtility.FontSize.SMALL,
+                LumoUtility.TextAlignment.CENTER);
 
         Span linkText = new Span("Go →");
         linkText.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.PRIMARY);
@@ -112,7 +110,7 @@ public class TeacherDashboardView extends VerticalLayout {
 
     private void loadDashboardData() {
         String teacherEmail = getCurrentUserEmail();
-        
+
         if (teacherEmail == null) {
             Notification.show("Session expired. Please login again.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -126,11 +124,11 @@ public class TeacherDashboardView extends VerticalLayout {
             // Could display teacher-specific info here if needed
         }
 
-        // Load courses
+        // Load courses for the specific teacher
         List<CourseDto> courses = courseService.getCoursesByTeacherEmail(teacherEmail);
-        
+
         if (courses.isEmpty()) {
-            courseListLayout.add(new Paragraph("No courses assigned yet."));
+            courseListLayout.add(new Paragraph("No courses available."));
         } else {
             for (CourseDto course : courses) {
                 courseListLayout.add(createCourseCard(course));
@@ -141,10 +139,9 @@ public class TeacherDashboardView extends VerticalLayout {
     private HorizontalLayout createCourseCard(CourseDto course) {
         HorizontalLayout card = new HorizontalLayout();
         card.addClassNames(
-            LumoUtility.Background.CONTRAST_5,
-            LumoUtility.BorderRadius.SMALL,
-            LumoUtility.Padding.MEDIUM
-        );
+                LumoUtility.Background.CONTRAST_5,
+                LumoUtility.BorderRadius.SMALL,
+                LumoUtility.Padding.MEDIUM);
         card.setWidthFull();
         card.setAlignItems(Alignment.CENTER);
 
@@ -159,10 +156,9 @@ public class TeacherDashboardView extends VerticalLayout {
         courseTitle.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
 
         Span courseDetails = new Span(
-            course.getType() + " • " + 
-            course.getDuration() + " min • " + 
-            (course.getGroupName() != null ? course.getGroupName() : "No group")
-        );
+                course.getCredits() + " cr • " +
+                        course.getSemester() + " sem • " +
+                        (course.getParity() != null ? course.getParity() : "N/A"));
         courseDetails.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL);
 
         details.add(courseTitle, courseDetails);

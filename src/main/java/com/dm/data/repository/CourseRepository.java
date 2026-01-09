@@ -1,22 +1,17 @@
 package com.dm.data.repository;
 
-import com.dm.data.entity.Course;
+import com.dm.data.entity.CourseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
+/**
+ * Repository for CourseEntity.
+ */
 @Repository
-public interface CourseRepository extends JpaRepository<Course, Long> {
+public interface CourseRepository extends JpaRepository<CourseEntity, Long> {
 
-    Course findByCode(String code);
-
-    List<Course> findAllByType(String type);
-
-    List<Course> findAllByParity(String parity);
-    List<Course> findAllByTeacherId(Long teacherId);
-
-    List<Course> findAllByGroupId(Long groupId);
-
-    String teacher_Id(Long teacherId);
+    Optional<CourseEntity> findByCode(String code);
 }
+

@@ -38,8 +38,7 @@ public class TeacherCoursesView extends VerticalLayout {
 
         H1 header = new H1("📚 My Courses");
         Paragraph description = new Paragraph(
-            "Below are the courses you are currently assigned to teach."
-        );
+                "Below are the courses you are currently assigned to teach.");
 
         add(header, description, courseGrid);
         loadCourses();
@@ -47,7 +46,7 @@ public class TeacherCoursesView extends VerticalLayout {
 
     private void loadCourses() {
         String teacherEmail = getCurrentUserEmail();
-        
+
         if (teacherEmail == null) {
             Notification.show("Session expired. Please login again.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -55,13 +54,14 @@ public class TeacherCoursesView extends VerticalLayout {
             return;
         }
 
+        // Create filtered list of courses for the teacher
         List<CourseDto> courses = courseService.getCoursesByTeacherEmail(teacherEmail);
-        
+
         if (courses.isEmpty()) {
-            Notification.show("No courses found for your account.", 3000, Notification.Position.MIDDLE)
+            Notification.show("No courses available.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_CONTRAST);
         }
-        
+
         courseGrid.setCourses(courses);
     }
 

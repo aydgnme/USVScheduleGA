@@ -62,13 +62,16 @@ public class CourseView extends VerticalLayout {
     }
 
     private void saveCourse(CourseForm.SaveEvent event) {
-        courseService.save(event.getCourse());
+        // TODO: Convert CourseDto to CourseRequestDto
+        // courseService.save(event.getCourse());
         updateList();
         closeEditor();
     }
 
     private void deleteCourse(CourseForm.DeleteEvent event) {
-        courseService.delete(event.getCourse());
+        if (event.getCourse().getId() != null) {
+            courseService.delete(event.getCourse().getId());
+        }
         updateList();
         closeEditor();
     }
@@ -102,6 +105,6 @@ public class CourseView extends VerticalLayout {
 
     private void addCourse() {
         grid.asSingleSelect().clear();
-        editCourse(new CourseDto(null, null, null, null, 0, null, null, null, null, null));
+        editCourse(new CourseDto(null, null, null, null, 0, 0, null));
     }
 }

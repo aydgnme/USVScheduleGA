@@ -1,35 +1,28 @@
 package com.dm.mapper;
 
-import com.dm.data.entity.Group;
+import com.dm.data.entity.GroupEntity;
 import com.dm.dto.GroupDto;
-import org.springframework.stereotype.Component;
+import com.dm.model.Group;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-@Component
-public class GroupMapper {
+/**
+ * Mapper for GroupEntity ⇄ GroupDto and GroupEntity ⇄ Group domain.
+ */
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface GroupMapper {
 
-    public GroupDto toDto(Group group) {
-        if (group == null) {
-            return null;
-        }
-        return new GroupDto(
-                group.getId(),
-                group.getName(),
-                group.getStudyYear(),
-                group.getSpecialization(),
-                group.getFaculty()
-        );
-    }
+    @Mapping(source = "specialization.id", target = "specializationId")
+    GroupDto toDto(GroupEntity entity);
 
-    public Group toEntity(GroupDto groupDto) {
-        if (groupDto == null) {
-            return null;
-        }
-        Group group = new Group();
-        group.setId(groupDto.getId());
-        group.setName(groupDto.getName());
-        group.setStudyYear(groupDto.getStudyYear());
-        group.setSpecialization(groupDto.getSpecialization());
-        group.setFaculty(groupDto.getFaculty());
-        return group;
-    }
+    @Mapping(source = "specialization.id", target = "specializationId")
+    @Mapping(source = "specialization", target = "specialization", ignore = true)
+    Group toDomain(GroupEntity entity);
+
+    @Mapping(source = "specializationId", target = "specialization.id")
+    GroupEntity toEntity(GroupDto dto);
+
+    @Mapping(source = "specializationId", target = "specialization.id")
+    GroupEntity toEntityFromDomain(Group domain);
 }

@@ -1,52 +1,37 @@
 package com.dm.mapper;
 
+import com.dm.data.entity.TeacherProfileEntity;
 import com.dm.dto.TeacherDto;
-import com.dm.data.entity.Teacher;
-import org.springframework.stereotype.Component;
+import com.dm.model.Teacher;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.Mapping;
 
 /**
- * Mapper for converting between {@link Teacher} entity and {@link TeacherDto}.
+ * Mapper for TeacherProfileEntity ⇄ TeacherDto and TeacherProfileEntity ⇄
+ * Teacher domain.
  */
-@Component
-public class TeacherMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface TeacherMapper {
 
-    /**
-     * Converts a Teacher entity to a TeacherDto.
-     * @param entity The Teacher entity.
-     * @return The corresponding TeacherDto.
-     */
-    public TeacherDto toDto(Teacher entity) {
-        if (entity == null) return null;
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.email", target = "email")
+    @Mapping(source = "departments", target = "departments", ignore = true)
+    TeacherDto toDto(TeacherProfileEntity entity);
 
-        return new TeacherDto(
-                entity.getId(),
-                entity.getName(),
-                entity.getEmail(),
-                entity.getMaxHoursWeekly(),
-                entity.getDepartment(),
-                entity.getAvailableDays(),
-                entity.getPreferredTime()
-        );
-    }
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.email", target = "email")
+    @Mapping(source = "departments", target = "departments", ignore = true)
+    Teacher toDomain(TeacherProfileEntity entity);
 
-    /**
-     * Converts a TeacherDto to a Teacher entity.
-     * @param dto The TeacherDto.
-     * @return The corresponding Teacher entity.
-     */
-    public Teacher toEntity(TeacherDto dto) {
-        if (dto == null) return null;
+    @Mapping(source = "userId", target = "user.id")
+    @Mapping(source = "departments", target = "departments", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "fullName", ignore = true)
+    TeacherProfileEntity toEntity(TeacherDto dto);
 
-        Teacher t = new Teacher();
-        t.setId(dto.getId());
-        t.setName(dto.getName());
-        t.setEmail(dto.getEmail());
-        t.setMaxHoursWeekly(
-                dto.getMaxHoursWeekly() != null ? dto.getMaxHoursWeekly() : 0
-        );
-        t.setDepartment(dto.getDepartment());
-        t.setAvailableDays(dto.getAvailableDays());
-        t.setPreferredTime(dto.getPreferredTime());
-        return t;
-    }
+    @Mapping(source = "userId", target = "user.id")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "fullName", ignore = true)
+    TeacherProfileEntity toEntityFromDomain(Teacher domain);
 }

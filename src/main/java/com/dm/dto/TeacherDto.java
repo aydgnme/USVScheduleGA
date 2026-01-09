@@ -3,17 +3,21 @@ package com.dm.dto;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
- * DTO for {@link com.dm.data.entity.Teacher}
+ * Teacher profile DTO (auth data via userId).
  */
 @Value
 public class TeacherDto implements Serializable {
     Long id;
-    String name;
+    Long userId;
+    String firstName;
+    String lastName;
     String email;
     Integer maxHoursWeekly;
-    String department;
-    String availableDays;
+    Set<DepartmentDto> departments;
+    String availableDaysJson;
     String preferredTime;
+    String note;
 }

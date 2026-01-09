@@ -1,6 +1,6 @@
 package com.dm.view.teacher;
 
-import com.dm.dto.ScheduleItemDto;
+import com.dm.dto.ScheduleEntryDto;
 import com.dm.service.ScheduleService;
 import com.dm.view.layout.MainLayout;
 import com.dm.view.teacher.components.ScheduleGridComponent;
@@ -55,7 +55,7 @@ public class TeacherScheduleView extends VerticalLayout {
             return;
         }
 
-        List<ScheduleItemDto> scheduleItems = scheduleService.getByTeacherEmail(teacherEmail);
+        List<ScheduleEntryDto> scheduleItems = scheduleService.getByTeacherEmail(teacherEmail);
         
         if (scheduleItems.isEmpty()) {
             Notification.show("No schedule entries found. Your schedule may not be finalized yet.", 

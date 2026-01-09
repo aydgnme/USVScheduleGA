@@ -12,10 +12,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
+@SuppressWarnings("deprecation")
 public class SecurityConfig extends VaadinWebSecurity {
 
     private UserService userService;
@@ -51,9 +51,8 @@ public class SecurityConfig extends VaadinWebSecurity {
                         "/images/**",
                         "/icons/**",
                         "/manifest.webmanifest",
-                        "/offline.html"
-                ).permitAll()
-        );
+                        "/offline.html")
+                .permitAll());
 
         // Register custom auth provider (UserService + encoder)
         http.authenticationProvider(authenticationProvider());
@@ -74,15 +73,14 @@ public class SecurityConfig extends VaadinWebSecurity {
                     } else {
                         response.sendRedirect("/dashboard"); // Fallback for other roles or general dashboard
                     }
-                })
-        );
+                }));
 
         http.logout(logout -> logout
-            // Allow GET anchors from Vaadin and ensure redirect back to login
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-            .logoutSuccessUrl("/login")
-                .permitAll()
-        );
+                // Allow GET anchors from Vaadin and ensure redirect back to login
+                .logoutRequestMatcher(
+                        new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login")
+                .permitAll());
 
         // Apply Vaadin defaults (adds its own anyRequest) after custom matchers.
         setLoginView(http, com.dm.view.login.LoginView.class);

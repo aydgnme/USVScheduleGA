@@ -1,47 +1,26 @@
 package com.dm.mapper;
 
+import com.dm.data.entity.UserEntity;
 import com.dm.dto.UserDto;
-import com.dm.data.entity.User;
-import com.dm.data.entity.Role;
-import org.springframework.stereotype.Component;
+import com.dm.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
 /**
- * Mapper for converting between {@link User} entity and {@link UserDto}.
+ * Mapper for UserEntity ⇄ UserDto and UserEntity ⇄ User domain.
  */
-@Component
-public class UserMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UserMapper {
 
-    /**
-     * Converts a User entity to a UserDto.
-     * @param entity The User entity.
-     * @return The corresponding UserDto.
-     */
-    public UserDto toDto(User entity) {
-        if (entity == null) {
-            return null;
-        }
-        return new UserDto(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getRole(),
-                entity.isEnabled()
-        );
-    }
+    UserDto toDto(UserEntity entity);
 
-    /**
-     * Converts a UserDto to a User entity.
-     * @param dto The UserDto.
-     * @return The corresponding User entity.
-     */
-    public User toEntity(UserDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        User user = new User();
-        user.setId(dto.getId());
-        user.setEmail(dto.getEmail());
-        user.setRole(dto.getRole());
-        user.setEnabled(dto.isEnabled());
-        return user;
-    }
+    User toDomain(UserEntity entity);
+
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "teacherProfile", ignore = true)
+    UserEntity toEntity(UserDto dto);
+
+    @Mapping(target = "teacherProfile", ignore = true)
+    UserEntity toEntityFromDomain(User domain);
 }

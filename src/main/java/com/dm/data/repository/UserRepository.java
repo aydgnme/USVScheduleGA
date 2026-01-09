@@ -1,13 +1,19 @@
 package com.dm.data.repository;
 
-import com.dm.data.entity.User;
+import com.dm.data.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
 
-    User findByEmail(String email);
+/**
+ * Repository for UserEntity.
+ */
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    Optional<UserEntity> findByEmail(String email);
 
     boolean existsByEmail(String email);
 }
+

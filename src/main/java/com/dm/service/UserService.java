@@ -1,7 +1,7 @@
 package com.dm.service;
 
 import com.dm.data.entity.Role;
-import com.dm.data.entity.User;
+import com.dm.data.entity.UserEntity;
 import com.dm.data.repository.UserRepository;
 import com.dm.dto.UserDto;
 import com.dm.mapper.UserMapper;
@@ -32,10 +32,8 @@ public class UserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + email);
-        }
+        UserEntity user = repository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
@@ -68,7 +66,7 @@ public class UserService implements UserDetailsService {
      * Registers a new teacher (inactive until approved)
      */
     public UserDto registerTeacher(String email, String rawPassword) {
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole(Role.TEACHER);
@@ -80,7 +78,7 @@ public class UserService implements UserDetailsService {
      * Registers a secretary (auto-approved)
      */
     public UserDto registerSecretary(String email, String rawPassword) {
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole(Role.SECRETARY);
@@ -92,7 +90,7 @@ public class UserService implements UserDetailsService {
      * Approves a pending teacher (activated by secretary)
      */
     public void approveUser(Long id) {
-        User user = repository.findById(id)
+        UserEntity user = repository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
         user.setEnabled(true);
         repository.save(user);

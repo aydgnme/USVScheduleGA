@@ -15,8 +15,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.VaadinConfig;
-import com.vaadin.flow.server.VaadinSession;
+
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

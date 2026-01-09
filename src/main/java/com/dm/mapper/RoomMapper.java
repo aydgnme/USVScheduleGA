@@ -1,46 +1,27 @@
 package com.dm.mapper;
 
-import com.dm.data.entity.Room;
+import com.dm.data.entity.RoomEntity;
 import com.dm.dto.RoomDto;
-import org.springframework.stereotype.Component;
+import com.dm.model.Room;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
 /**
- * Mapper for converting between {@link Room} entity and {@link RoomDto}.
+ * Mapper for RoomEntity ⇄ RoomDto and RoomEntity ⇄ Room domain.
  */
-@Component
-public class RoomMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface RoomMapper {
 
-    /**
-     * Converts a Room entity to a RoomDto.
-     * @param entity The Room entity.
-     * @return The corresponding RoomDto.
-     */
-    public RoomDto toDto(Room entity) {
-        if (entity == null) {
-            return null;
-        }
-        return new RoomDto(
-                entity.getId(),
-                entity.getCode(),
-                entity.getCapacity(),
-                entity.getType()
-        );
-    }
+    @Mapping(source = "featuresJson", target = "features", ignore = true)
+    RoomDto toDto(RoomEntity entity);
 
-    /**
-     * Converts a RoomDto to a Room entity.
-     * @param dto The RoomDto.
-     * @return The corresponding Room entity.
-     */
-    public Room toEntity(RoomDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        Room r = new Room();
-        r.setId(dto.getId());
-        r.setCode(dto.getCode());
-        r.setCapacity(dto.getCapacity());
-        r.setType(dto.getType());
-        return r;
-    }
+    @Mapping(source = "featuresJson", target = "features", ignore = true)
+    Room toDomain(RoomEntity entity);
+
+    @Mapping(target = "featuresJson", ignore = true)
+    RoomEntity toEntity(RoomDto dto);
+
+    @Mapping(target = "featuresJson", ignore = true)
+    RoomEntity toEntityFromDomain(Room domain);
 }

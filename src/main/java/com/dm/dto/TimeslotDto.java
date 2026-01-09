@@ -3,14 +3,17 @@ package com.dm.dto;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 /**
- * DTO for {@link com.dm.data.entity.Timeslot}
+ * Timeslot DTO using day and LocalTime fields.
  */
 @Value
 public class TimeslotDto implements Serializable {
     Long id;
-    String day;
-    String startTime;
-    String endTime;
+    DayOfWeek dayOfWeek;
+    LocalTime startTime;
+    LocalTime endTime;
+    Integer durationMinutes;
 }

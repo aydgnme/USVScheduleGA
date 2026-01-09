@@ -68,7 +68,9 @@ public class RoomView extends VerticalLayout {
     }
 
     private void deleteRoom(RoomForm.DeleteEvent event) {
-        roomService.delete(event.getRoom());
+        if (event.getRoom().getId() != null) {
+            roomService.delete(event.getRoom().getId());
+        }
         updateList();
         closeEditor();
     }
@@ -102,6 +104,6 @@ public class RoomView extends VerticalLayout {
 
     private void addRoom() {
         grid.asSingleSelect().clear();
-        editRoom(new RoomDto(null, null, 0, null));
+        editRoom(new RoomDto(null, null, null, null, null, null, null));
     }
 }

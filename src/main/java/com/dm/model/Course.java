@@ -1,13 +1,13 @@
 package com.dm.model;
 
+import com.dm.model.types.CourseComponentType;
+import com.dm.model.types.WeekParity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents a course in the application's domain model.
- * This is a plain Java object used for business logic and data transfer,
- * without any persistence-specific annotations.
+ * Domain course definition; assignment to groups/teachers occurs via CourseOffering.
  */
 @Data
 @NoArgsConstructor
@@ -17,9 +17,8 @@ public class Course {
     private Long id;
     private String code;
     private String title;
-    private String type;
-    private Teacher teacher;
-    private Group group;
-    private int duration;
-    private String parity;
+    private CourseComponentType componentType;
+    private int credits;
+    private int semester;
+    private WeekParity parity;
 }

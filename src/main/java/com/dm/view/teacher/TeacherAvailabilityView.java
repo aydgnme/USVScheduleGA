@@ -82,7 +82,7 @@ public class TeacherAvailabilityView extends VerticalLayout {
                 return;
             }
 
-            teacherService.update(updatedTeacher);
+            teacherService.update(updatedTeacher.getId(), updatedTeacher);
             currentTeacher = updatedTeacher;
 
             Notification notification = Notification.show(

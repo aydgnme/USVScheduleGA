@@ -1,23 +1,21 @@
 package com.dm.dto;
 
+import com.dm.model.types.CourseComponentType;
+import com.dm.model.types.WeekParity;
 import lombok.Value;
+
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.dm.data.entity.Course}
+ * Course definition DTO (no assignments here).
  */
 @Value
 public class CourseDto implements Serializable {
     Long id;
     String code;
     String title;
-    String type;
-    int duration;
-    String parity;
-
-    Long teacherId;
-    String teacherName;
-
-    Long groupId;
-    String groupName;
+    CourseComponentType componentType;
+    int credits;
+    int semester;
+    WeekParity parity;
 }

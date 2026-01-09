@@ -1,14 +1,18 @@
 package com.dm.service;
 
+import com.dm.data.entity.RoomEntity;
 import com.dm.data.repository.RoomRepository;
 import com.dm.dto.RoomDto;
 import com.dm.mapper.RoomMapper;
-import com.dm.data.entity.Room;
+import com.dm.model.types.RoomType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing rooms.
+ */
 @Service
 public class RoomService {
 
@@ -26,13 +30,18 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    public RoomDto findByCode(String code) {
-        Room room = repository.findByCode(code);
-        return room != null ? mapper.toDto(room) : null;
+    public List<RoomDto> findAll() {
+        return getAll();
     }
 
-    public List<RoomDto> findByType(String type) {
-        return repository.findAllByType(type).stream()
+    public RoomDto findByCode(String code) {
+        return repository.findByCode(code)
+                .map(mapper::toDto)
+                .orElse(null);
+    }
+
+    public List<RoomDto> findByRoomType(RoomType roomType) {
+        return repository.findAllByRoomType(roomType).stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -43,18 +52,24 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    public RoomDto save(RoomDto dto) {
-        Room room = mapper.toEntity(dto);
-        return mapper.toDto(repository.save(room));
-    }
-
-    public List<RoomDto> findAll() {
-        return repository.findAll().stream()
+    public List<RoomDto> findByBuilding(String building) {
+        return repository.findAllByBuilding(building).stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public void delete(RoomDto room) {
-        repository.delete(mapper.toEntity(room));
+    public List<RoomDto> findComputerLabsByBuilding(String building) {
+        return repository.findAllByBuildingAndComputersGreaterThan(building, 0).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public RoomDto save(RoomDto dto) {
+        RoomEntity entity = mapper.toEntity(dto);
+        return mapper.toDto(repository.save(entity));
+    }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }
