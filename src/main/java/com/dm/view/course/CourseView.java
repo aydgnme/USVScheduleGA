@@ -89,7 +89,7 @@ public class CourseView extends VerticalLayout {
     private void configureGrid() {
         grid.addClassName("course-grid");
         grid.setSizeFull();
-        grid.setColumns("code", "title", "type", "duration", "parity", "teacherName", "groupName");
+        grid.setColumns("code", "title", "componentType", "credits", "semester", "parity");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
         grid.asSingleSelect().addValueChangeListener(e -> editCourse(e.getValue()));
     }

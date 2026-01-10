@@ -11,12 +11,11 @@ import org.mapstruct.Mapping;
  * Mapper for TeacherProfileEntity ⇄ TeacherDto and TeacherProfileEntity ⇄
  * Teacher domain.
  */
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = { DepartmentMapper.class })
 public interface TeacherMapper {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.email", target = "email")
-    @Mapping(source = "departments", target = "departments", ignore = true)
     TeacherDto toDto(TeacherProfileEntity entity);
 
     @Mapping(source = "user.id", target = "userId")

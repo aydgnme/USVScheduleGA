@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  * Service for managing rooms.
  */
 @Service
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class RoomService {
 
     private final RoomRepository repository;
@@ -64,11 +65,13 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public RoomDto save(RoomDto dto) {
         RoomEntity entity = mapper.toEntity(dto);
         return mapper.toDto(repository.save(entity));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void delete(Long id) {
         repository.deleteById(id);
     }

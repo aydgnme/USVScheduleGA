@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  * Service for managing groups.
  */
 @Service
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class GroupService {
 
     private final GroupRepository repository;
@@ -53,13 +54,14 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public GroupDto save(GroupDto dto) {
         GroupEntity entity = mapper.toEntity(dto);
         return mapper.toDto(repository.save(entity));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void delete(Long id) {
         repository.deleteById(id);
     }
 }
-

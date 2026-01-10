@@ -80,10 +80,13 @@ public class AdminTeachersView extends VerticalLayout {
         grid.addColumn(TeacherDto::getLastName).setHeader("Last Name").setSortable(true);
         grid.addColumn(TeacherDto::getEmail).setHeader("Email").setSortable(true);
 
-        grid.addColumn(teacher -> teacher.getDepartments().stream()
-                .map(DepartmentDto::getCode)
-                .collect(Collectors.joining(", ")))
-                .setHeader("Departments");
+        grid.addColumn(teacher -> {
+            if (teacher.getDepartments() == null)
+                return "";
+            return teacher.getDepartments().stream()
+                    .map(DepartmentDto::getCode)
+                    .collect(Collectors.joining(", "));
+        }).setHeader("Departments");
 
         grid.addColumn(TeacherDto::getMaxHoursWeekly).setHeader("Max Hours");
 

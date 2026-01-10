@@ -76,7 +76,7 @@ public class TimeslotView extends VerticalLayout {
     private void configureGrid() {
         grid.addClassName("timeslot-grid");
         grid.setSizeFull();
-        grid.setColumns("day", "startTime", "endTime");
+        grid.setColumns("dayOfWeek", "startTime", "endTime");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
         grid.asSingleSelect().addValueChangeListener(event -> editTimeslot(event.getValue()));
     }

@@ -8,6 +8,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -21,12 +22,10 @@ public class CourseForm extends FormLayout {
 
     TextField code = new TextField("Code");
     TextField title = new TextField("Title");
-    TextField type = new TextField("Type");
-    IntegerField duration = new IntegerField("Duration");
-    TextField parity = new TextField("Parity");
-    TextField teacherName = new TextField("Teacher Name");
-    TextField groupName = new TextField("Group Name");
-
+    ComboBox<com.dm.model.types.CourseComponentType> componentType = new ComboBox<>("Type");
+    IntegerField credits = new IntegerField("Credits");
+    IntegerField semester = new IntegerField("Semester");
+    ComboBox<com.dm.model.types.WeekParity> parity = new ComboBox<>("Parity");
 
     Button save = new Button("Save");
     Button delete = new Button("Delete");
@@ -34,15 +33,18 @@ public class CourseForm extends FormLayout {
 
     public CourseForm() {
         addClassName("course-form");
+
+        componentType.setItems(com.dm.model.types.CourseComponentType.values());
+        parity.setItems(com.dm.model.types.WeekParity.values());
+
         binder.bindInstanceFields(this);
 
         add(code,
                 title,
-                type,
-                duration,
+                componentType,
+                credits,
+                semester,
                 parity,
-                teacherName,
-                groupName,
                 createButtonsLayout());
     }
 
@@ -63,11 +65,10 @@ public class CourseForm extends FormLayout {
     }
 
     private void validateAndSave() {
-        if(binder.isValid()) {
+        if (binder.isValid()) {
             fireEvent(new SaveEvent(this, binder.getBean()));
         }
     }
-
 
     public void setCourse(CourseDto course) {
         binder.setBean(course);
@@ -113,6 +114,7 @@ public class CourseForm extends FormLayout {
     public Registration addSaveListener(ComponentEventListener<SaveEvent> listener) {
         return addListener(SaveEvent.class, listener);
     }
+
     public Registration addCloseListener(ComponentEventListener<CloseEvent> listener) {
         return addListener(CloseEvent.class, listener);
     }

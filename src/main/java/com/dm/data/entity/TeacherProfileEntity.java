@@ -3,7 +3,9 @@ package com.dm.data.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Teacher profile separated from authentication user.
@@ -21,6 +23,8 @@ public class TeacherProfileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private UserEntity user;
@@ -40,6 +44,8 @@ public class TeacherProfileEntity {
         // Read-only or split logic if needed, but for now irrelevant
     }
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "teacher_departments", joinColumns = @JoinColumn(name = "teacher_id"), inverseJoinColumns = @JoinColumn(name = "department_id"))
     private java.util.Set<DepartmentEntity> departments = new java.util.HashSet<>();

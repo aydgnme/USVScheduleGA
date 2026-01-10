@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  * Service for managing teacher profiles.
  */
 @Service
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class TeacherService {
 
     private final TeacherRepository repository;
@@ -56,17 +57,20 @@ public class TeacherService {
                 .collect(Collectors.toList());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public TeacherDto save(TeacherDto dto) {
         TeacherProfileEntity entity = mapper.toEntity(dto);
         return mapper.toDto(repository.save(entity));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public TeacherDto update(Long id, TeacherDto dto) {
         TeacherProfileEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Teacher not found: " + id));
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
-        // Note: departments mapping is handled via MapStruct or manual entity processing if needed
+        // Note: departments mapping is handled via MapStruct or manual entity
+        // processing if needed
         entity.setMaxHoursWeekly(dto.getMaxHoursWeekly());
         entity.setAvailableDaysJson(dto.getAvailableDaysJson());
         entity.setPreferredTime(dto.getPreferredTime());
@@ -74,6 +78,7 @@ public class TeacherService {
         return mapper.toDto(repository.save(entity));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void delete(Long id) {
         repository.deleteById(id);
     }

@@ -3,7 +3,9 @@ package com.dm.data.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Department Entity
@@ -23,6 +25,8 @@ public class DepartmentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "faculty_id", nullable = false)
     private FacultyEntity faculty;
@@ -33,9 +37,13 @@ public class DepartmentEntity {
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private java.util.Set<SpecializationEntity> specializations = new java.util.HashSet<>();
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "departments", fetch = FetchType.LAZY)
     private java.util.Set<TeacherProfileEntity> teachers = new java.util.HashSet<>();
 }

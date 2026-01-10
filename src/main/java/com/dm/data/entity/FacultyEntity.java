@@ -3,7 +3,9 @@ package com.dm.data.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Faculty Entity
@@ -30,6 +32,8 @@ public class FacultyEntity {
     @Column(name = "short_name", length = 100)
     private String shortName;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private java.util.Set<DepartmentEntity> departments = new java.util.HashSet<>();
 }

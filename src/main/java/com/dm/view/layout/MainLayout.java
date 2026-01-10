@@ -102,6 +102,12 @@ public class MainLayout extends AppLayout {
         if (authentication == null) {
             return false;
         }
+
+        // Debug logging
+        // System.out.println("User: " + authentication.getName());
+        // authentication.getAuthorities().forEach(a -> System.out.println("Auth: " +
+        // a.getAuthority()));
+
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
     }

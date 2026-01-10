@@ -3,7 +3,9 @@ package com.dm.data.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Authentication user; profile data lives in TeacherProfileEntity when
@@ -35,6 +37,8 @@ public class UserEntity {
     @Column(nullable = false)
     private boolean enabled = false;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private TeacherProfileEntity teacherProfile;
 }

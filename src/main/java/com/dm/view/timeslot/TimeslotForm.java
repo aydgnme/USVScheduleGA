@@ -9,17 +9,21 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.timepicker.TimePicker;
+import java.time.DayOfWeek;
+
 public class TimeslotForm extends FormLayout {
     Binder<TimeslotDto> binder = new BeanValidationBinder<>(TimeslotDto.class);
 
-    TextField day = new TextField("Day");
-    TextField startTime = new TextField("Start time");
-    TextField endTime = new TextField("End time");
+    ComboBox<DayOfWeek> dayOfWeek = new ComboBox<>("Day");
+    TimePicker startTime = new TimePicker("Start time");
+    TimePicker endTime = new TimePicker("End time");
 
     Button save = new Button("Save");
     Button delete = new Button("Delete");
@@ -27,9 +31,12 @@ public class TimeslotForm extends FormLayout {
 
     public TimeslotForm() {
         addClassName("timeslot-form");
+
+        dayOfWeek.setItems(DayOfWeek.values());
+
         binder.bindInstanceFields(this);
 
-        add(day,
+        add(dayOfWeek,
                 startTime,
                 endTime,
                 createButtonsLayout());
@@ -52,11 +59,10 @@ public class TimeslotForm extends FormLayout {
     }
 
     private void validateAndSave() {
-        if(binder.isValid()) {
+        if (binder.isValid()) {
             fireEvent(new SaveEvent(this, binder.getBean()));
         }
     }
-
 
     public void setTimeslot(TimeslotDto timeslot) {
         binder.setBean(timeslot);
@@ -102,6 +108,7 @@ public class TimeslotForm extends FormLayout {
     public Registration addSaveListener(ComponentEventListener<SaveEvent> listener) {
         return addListener(SaveEvent.class, listener);
     }
+
     public Registration addCloseListener(ComponentEventListener<CloseEvent> listener) {
         return addListener(CloseEvent.class, listener);
     }
