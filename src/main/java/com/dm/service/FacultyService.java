@@ -46,4 +46,8 @@ public class FacultyService {
     public void delete(Long id) {
         facultyRepository.deleteById(id);
     }
+
+    public long count() {
+        return facultyRepository.count();
+    }
 }

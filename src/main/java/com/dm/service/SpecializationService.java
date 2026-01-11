@@ -57,4 +57,8 @@ public class SpecializationService {
     public void delete(Long id) {
         specializationRepository.deleteById(id);
     }
+
+    public long count() {
+        return specializationRepository.count();
+    }
 }

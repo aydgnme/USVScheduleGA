@@ -20,15 +20,24 @@ public class AdminDashboardView extends VerticalLayout {
     private final com.dm.service.RoomService roomService;
     private final com.dm.service.GroupService groupService;
     private final com.dm.service.CourseService courseService;
+    private final com.dm.service.FacultyService facultyService;
+    private final com.dm.service.DepartmentService departmentService;
+    private final com.dm.service.SpecializationService specializationService;
 
     public AdminDashboardView(com.dm.service.TeacherService teacherService,
             com.dm.service.RoomService roomService,
             com.dm.service.GroupService groupService,
-            com.dm.service.CourseService courseService) {
+            com.dm.service.CourseService courseService,
+            com.dm.service.FacultyService facultyService,
+            com.dm.service.DepartmentService departmentService,
+            com.dm.service.SpecializationService specializationService) {
         this.teacherService = teacherService;
         this.roomService = roomService;
         this.groupService = groupService;
         this.courseService = courseService;
+        this.facultyService = facultyService;
+        this.departmentService = departmentService;
+        this.specializationService = specializationService;
 
         addClassName("admin-dashboard-view");
         setSizeFull();
@@ -45,26 +54,43 @@ public class AdminDashboardView extends VerticalLayout {
         HorizontalLayout stats = createStatsRow();
 
         // Navigation cards
-        HorizontalLayout navigationCards = createNavigationCards();
+        com.vaadin.flow.component.Component navigationCards = createNavigationCards();
 
         add(header, stats, navigationCards);
     }
 
-    private HorizontalLayout createNavigationCards() {
+    private com.vaadin.flow.component.Component createNavigationCards() {
         HorizontalLayout cards = new HorizontalLayout();
         cards.setWidthFull();
         cards.setSpacing(true);
         cards.setJustifyContentMode(JustifyContentMode.CENTER);
 
         cards.add(
-                createIconNavigationCard("school", "admin/teachers", "Manage Teachers"),
-                createIconNavigationCard("meeting_room", "admin/rooms", "Manage Rooms"),
-                createIconNavigationCard("groups", "admin/groups", "Manage Groups"));
+                createIconNavigationCard("school", "admin/teachers", "Teachers"),
+                createIconNavigationCard("meeting_room", "admin/rooms", "Rooms"),
+                createIconNavigationCard("groups", "admin/groups", "Groups"),
+                createIconNavigationCard("schedule", "admin/timeslots", "Timeslots"));
 
-        // Wrap for responsiveness if needed, but 3 cards usually fit
+        // Second Row for Structure
+        HorizontalLayout cards2 = new HorizontalLayout();
+        cards2.setWidthFull();
+        cards2.setSpacing(true);
+        cards2.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        cards2.add(
+                createIconNavigationCard("domain", "admin/faculties", "Faculties"),
+                createIconNavigationCard("account_balance", "admin/departments", "Departments"),
+                createIconNavigationCard("class", "admin/specializations", "Specializations"));
+
         cards.getStyle().set("flex-wrap", "wrap");
+        cards2.getStyle().set("flex-wrap", "wrap");
 
-        return cards;
+        VerticalLayout wrapper = new VerticalLayout(cards, cards2);
+        wrapper.setPadding(false);
+        wrapper.setSpacing(true);
+        wrapper.setWidthFull();
+
+        return wrapper;
     }
 
     private HorizontalLayout createStatsRow() {
@@ -74,9 +100,25 @@ public class AdminDashboardView extends VerticalLayout {
         stats.setSpacing(true);
         stats.getStyle().set("flex-wrap", "wrap");
 
-        // Use standard service instances (injected via constructor)
-        // Note: For Vaadin views, Spring injects into constructor. We need to update
-        // constructor.
+        // Primary Metrics
+        stats.add(new com.dm.view.components.StatsCard("Teachers", String.valueOf(teacherService.count()), "school",
+                LumoUtility.TextColor.PRIMARY));
+        stats.add(new com.dm.view.components.StatsCard("Rooms", String.valueOf(roomService.count()), "meeting_room",
+                LumoUtility.TextColor.SUCCESS));
+        stats.add(new com.dm.view.components.StatsCard("Groups", String.valueOf(groupService.count()), "groups",
+                LumoUtility.TextColor.ERROR));
+        stats.add(new com.dm.view.components.StatsCard("Courses", String.valueOf(courseService.count()), "book",
+                LumoUtility.TextColor.SECONDARY));
+
+        // Structural Metrics
+        // Structural Metrics
+        stats.add(new com.dm.view.components.StatsCard("Faculties", String.valueOf(facultyService.count()), "domain",
+                LumoUtility.TextColor.BODY));
+        stats.add(new com.dm.view.components.StatsCard("Departments", String.valueOf(departmentService.count()),
+                "account_balance", LumoUtility.TextColor.BODY));
+        stats.add(new com.dm.view.components.StatsCard("Specs", String.valueOf(specializationService.count()), "school",
+                LumoUtility.TextColor.BODY));
+
         return stats;
     }
 
