@@ -211,4 +211,85 @@ public class ServiceLayerTest {
         assertEquals(group.getCode(), fetchedDto.getGroupCode());
         assertEquals("Test", fetchedDto.getTeacherFirstName());
     }
+
+    @Test
+    public void testActivityTypePersistence() {
+        // 1. Create User & Teacher
+        UserEntity user = new UserEntity();
+        user.setEmail("activity.teacher." + System.currentTimeMillis() + "@test.com");
+        user.setPassword("pass");
+        user.setRole(com.dm.data.entity.Role.TEACHER);
+        user.setEnabled(true);
+        user = userRepository.save(user);
+
+        FacultyEntity faculty = facultyRepository.findByCode("FIESC")
+                .orElseGet(() -> {
+                    FacultyEntity f = new FacultyEntity();
+                    f.setCode("FIESC");
+                    f.setName("Activity Faculty");
+                    return facultyRepository.save(f);
+                });
+
+        DepartmentEntity dept = new DepartmentEntity();
+        dept.setCode("AT_DEPT_" + System.currentTimeMillis());
+        dept.setName("Activity Dept");
+        dept.setFaculty(faculty);
+        dept = departmentRepository.save(dept);
+
+        TeacherProfileEntity teacher = new TeacherProfileEntity();
+        teacher.setUser(user);
+        teacher.setFirstName("Activity");
+        teacher.setLastName("Teacher");
+        teacher.getDepartments().add(dept);
+        teacher.setMaxHoursWeekly(10);
+        teacher = teacherRepository.save(teacher);
+
+        // 2. Create Course
+        CourseEntity course = new CourseEntity();
+        course.setCode("AT_COURSE_" + System.currentTimeMillis());
+        course.setTitle("Activity Course");
+        course.setCredits(5);
+        course.setSemester(1);
+        course.setDepartment(dept);
+        course.setComponentType(com.dm.model.types.CourseComponentType.LAB);
+        course.setParity(WeekParity.BOTH);
+        course = courseRepository.save(course);
+
+        // 3. Create Specialization & Group
+        SpecializationEntity spec = new SpecializationEntity();
+        spec.setCode("AT_SPEC_" + System.currentTimeMillis());
+        spec.setName("Activity Spec");
+        spec.setDepartment(dept);
+        spec.setStudyCycle("BACHELOR");
+        spec = specializationRepository.save(spec);
+
+        GroupEntity group = new GroupEntity();
+        group.setCode("AT_GROUP_" + System.currentTimeMillis());
+        group.setSpecialization(spec);
+        group.setStudyYear(1);
+        group.setGroupNumber(1);
+        group = groupRepository.save(group);
+
+        // 4. Create Offering with specific ActivityType
+        CourseOfferingDto dto = new CourseOfferingDto();
+        dto.setCourseId(course.getId());
+        dto.setGroupId(group.getId());
+        dto.setTeacherId(teacher.getId());
+        dto.setWeeklyHours(2);
+        dto.setParity(WeekParity.ODD);
+        dto.setType(com.dm.model.types.ActivityType.LAB); // Explicitly setting type
+
+        CourseOfferingDto saved = courseOfferingService.save(dto);
+        assertNotNull(saved.getId());
+        assertEquals(com.dm.model.types.ActivityType.LAB, saved.getType());
+
+        // 5. Retrieve and Verification
+        CourseOfferingDto retrieved = courseOfferingService.getAll().stream()
+                .filter(o -> saved.getId().equals(o.getId()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(retrieved);
+        assertEquals(com.dm.model.types.ActivityType.LAB, retrieved.getType());
+    }
 }

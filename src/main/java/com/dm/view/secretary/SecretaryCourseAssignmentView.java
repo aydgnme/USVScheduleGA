@@ -137,6 +137,7 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
                 .setFlexGrow(1);
         grid.addColumn(o -> teacherNames.getOrDefault(o.getTeacherId(), "-")).setHeader("Teacher").setSortable(true)
                 .setAutoWidth(true);
+        grid.addColumn(CourseOfferingDto::getType).setHeader("Type").setAutoWidth(true);
         grid.addColumn(CourseOfferingDto::getWeeklyHours).setHeader("Hrs").setAutoWidth(true);
 
         grid.asSingleSelect().addValueChangeListener(e -> {
@@ -175,7 +176,10 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
         parity = new ComboBox<>("Parity");
         parity.setItems(WeekParity.values());
 
-        formLayout.add(group, course, teacher, weeklyHours, parity);
+        ComboBox<com.dm.model.types.ActivityType> type = new ComboBox<>("Type");
+        type.setItems(com.dm.model.types.ActivityType.values());
+
+        formLayout.add(group, course, teacher, weeklyHours, parity, type);
 
         binder = new BeanValidationBinder<>(CourseOfferingDto.class);
 
@@ -207,8 +211,12 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
                 },
                 (dto, t) -> dto.setTeacherId(t != null ? t.getId() : null));
 
-        binder.bind(weeklyHours, CourseOfferingDto::getWeeklyHours, CourseOfferingDto::setWeeklyHours);
+        binder.forField(weeklyHours)
+                .asRequired("Hours required")
+                .bind(CourseOfferingDto::getWeeklyHours, CourseOfferingDto::setWeeklyHours);
+
         binder.bind(parity, CourseOfferingDto::getParity, CourseOfferingDto::setParity);
+        binder.bind(type, CourseOfferingDto::getType, CourseOfferingDto::setType);
 
         saveButton = new Button("Save Assignment", e -> save());
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

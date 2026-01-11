@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  * CourseOfferingService).
  */
 @Service
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class CourseService {
 
     private final CourseRepository repository;

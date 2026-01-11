@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  * groups/teachers).
  */
 @Service
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class CourseOfferingService {
 
     private final CourseOfferingRepository repository;
@@ -79,6 +80,7 @@ public class CourseOfferingService {
                 .orElseThrow(() -> new IllegalArgumentException("Teacher not found: " + dto.getTeacherId())));
         entity.setWeeklyHours(dto.getWeeklyHours());
         entity.setParity(dto.getParity());
+        entity.setType(dto.getType());
         return mapper.toDto(repository.save(entity));
     }
 

@@ -20,6 +20,7 @@ public class CourseOfferingDto implements Serializable {
     Long teacherId;
     int weeklyHours;
     WeekParity parity;
+    com.dm.model.types.ActivityType type;
 
     // Display helpers
     String courseCode;

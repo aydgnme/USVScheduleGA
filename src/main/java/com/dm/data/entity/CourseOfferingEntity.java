@@ -39,4 +39,8 @@ public class CourseOfferingEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "parity", nullable = false, length = 10)
     private WeekParity parity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "activity_type", length = 20)
+    private com.dm.model.types.ActivityType type;
 }

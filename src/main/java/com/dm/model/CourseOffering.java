@@ -19,4 +19,5 @@ public class CourseOffering {
     private Teacher teacher;
     private int weeklyHours;
     private WeekParity parity;
+    private com.dm.model.types.ActivityType type;
 }
