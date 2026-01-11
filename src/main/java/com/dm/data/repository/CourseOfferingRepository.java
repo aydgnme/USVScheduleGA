@@ -21,4 +21,10 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOfferingEn
     @org.springframework.data.jpa.repository.Query("SELECT co FROM CourseOfferingEntity co JOIN FETCH co.course WHERE co.teacher.user.email = :email")
     List<CourseOfferingEntity> findAllByTeacher_User_Email(
             @org.springframework.data.repository.query.Param("email") String email);
+
+    @org.springframework.data.jpa.repository.Query("SELECT co FROM CourseOfferingEntity co " +
+            "JOIN FETCH co.course " +
+            "JOIN FETCH co.group " +
+            "JOIN FETCH co.teacher")
+    List<CourseOfferingEntity> findAllWithDetails();
 }

@@ -2,7 +2,9 @@ package com.dm.dto;
 
 import com.dm.model.types.ScheduleStatus;
 import com.dm.model.types.WeekParity;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;
@@ -11,7 +13,9 @@ import java.time.LocalTime;
 /**
  * DTO for scheduled entries combining offering, timeslot, and room.
  */
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScheduleEntryDto implements Serializable {
     Long id;
     Long offeringId;

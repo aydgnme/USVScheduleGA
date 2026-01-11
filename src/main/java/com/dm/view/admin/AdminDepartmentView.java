@@ -1,12 +1,14 @@
 package com.dm.view.admin;
 
-import com.dm.dto.RoomDto;
-import com.dm.model.types.RoomType;
-import com.dm.service.RoomService;
+import com.dm.data.entity.DepartmentEntity;
+import com.dm.data.entity.FacultyEntity;
+import com.dm.service.DepartmentService;
+import com.dm.service.FacultyService;
 import com.dm.view.components.AppCard;
 import com.dm.view.components.PageHeader;
 import com.dm.view.components.SearchToolbar;
 import com.dm.view.layout.MainLayout;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -18,7 +20,6 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -26,37 +27,35 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
-@Route(value = "admin/rooms", layout = MainLayout.class)
-@PageTitle("Room Management | USV Schedule")
+@Route(value = "admin/departments", layout = MainLayout.class)
+@PageTitle("Department Management | USV Schedule")
 @RolesAllowed("ROLE_ADMIN")
-public class AdminRoomsView extends VerticalLayout {
+public class AdminDepartmentView extends VerticalLayout {
 
-    private final RoomService roomService;
+    private final DepartmentService departmentService;
+    private final FacultyService facultyService;
 
-    private Grid<RoomDto> grid;
+    private Grid<DepartmentEntity> grid;
     private TextField code;
-    private ComboBox<RoomType> roomType;
-    private IntegerField capacity;
-    private TextField building;
-
-    // Additional fields from DTO if any? RoomDto has id, code, roomType, capacity,
-    // building.
+    private TextField name;
+    private ComboBox<FacultyEntity> faculty;
 
     private Button saveButton;
     private Button cancelButton;
     private Button deleteButton;
-    private Binder<RoomDto> binder;
+    private Binder<DepartmentEntity> binder;
 
-    private RoomDto currentRoom;
+    private DepartmentEntity currentDepartment;
 
-    public AdminRoomsView(RoomService roomService) {
-        this.roomService = roomService;
+    public AdminDepartmentView(DepartmentService departmentService, FacultyService facultyService) {
+        this.departmentService = departmentService;
+        this.facultyService = facultyService;
 
-        addClassName("admin-rooms-view");
+        addClassName("admin-dept-view");
         setSpacing(false);
         setSizeFull();
 
-        PageHeader header = new PageHeader("Room Management");
+        PageHeader header = new PageHeader("Department Management");
 
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
@@ -75,18 +74,18 @@ public class AdminRoomsView extends VerticalLayout {
         AppCard card = new AppCard();
         card.setHeightFull();
 
-        SearchToolbar toolbar = new SearchToolbar("Search rooms...", this::onSearch);
-        Button addButton = new Button("New Room", e -> clearForm());
+        SearchToolbar toolbar = new SearchToolbar("Search departments...", this::onSearch);
+        Button addButton = new Button("New Department", e -> clearForm());
         toolbar.addPrimaryAction(addButton);
 
-        grid = new Grid<>(RoomDto.class, false);
+        grid = new Grid<>(DepartmentEntity.class, false);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
         grid.setSizeFull();
 
-        grid.addColumn(RoomDto::getCode).setHeader("Code").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getRoomType).setHeader("Type").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getCapacity).setHeader("Cap").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getBuilding).setHeader("Building").setSortable(true).setFlexGrow(1);
+        grid.addColumn(DepartmentEntity::getCode).setHeader("Code").setSortable(true).setAutoWidth(true);
+        grid.addColumn(DepartmentEntity::getName).setHeader("Name").setSortable(true).setFlexGrow(1);
+        grid.addColumn(dept -> dept.getFaculty() != null ? dept.getFaculty().getCode() : "-")
+                .setHeader("Faculty").setSortable(true).setAutoWidth(true);
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             if (e.getValue() != null) {
@@ -107,15 +106,14 @@ public class AdminRoomsView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
 
         code = new TextField("Code");
-        roomType = new ComboBox<>("Type");
-        roomType.setItems(RoomType.values());
+        name = new TextField("Name");
+        faculty = new ComboBox<>("Faculty");
+        faculty.setItemLabelGenerator(FacultyEntity::getName);
+        faculty.setItems(facultyService.getAll());
 
-        capacity = new IntegerField("Capacity");
-        building = new TextField("Building");
+        formLayout.add(code, name, faculty);
 
-        formLayout.add(code, roomType, capacity, building);
-
-        binder = new BeanValidationBinder<>(RoomDto.class);
+        binder = new BeanValidationBinder<>(DepartmentEntity.class);
         binder.bindInstanceFields(this);
 
         saveButton = new Button("Save", e -> save());
@@ -135,56 +133,52 @@ public class AdminRoomsView extends VerticalLayout {
     }
 
     private void onSearch(String searchTerm) {
-        grid.setItems(roomService.getAll().stream()
-                .filter(r -> matches(r, searchTerm))
+        grid.setItems(departmentService.getAll().stream()
+                .filter(d -> matches(d, searchTerm))
                 .toList());
     }
 
-    private boolean matches(RoomDto r, String term) {
+    private boolean matches(DepartmentEntity d, String term) {
         if (term == null || term.isEmpty())
             return true;
         String lower = term.toLowerCase();
-        return (r.getCode() != null && r.getCode().toLowerCase().contains(lower)) ||
-                (r.getBuilding() != null && r.getBuilding().toLowerCase().contains(lower));
+        return (d.getName() != null && d.getName().toLowerCase().contains(lower)) ||
+                (d.getCode() != null && d.getCode().toLowerCase().contains(lower));
     }
 
     private void refreshGrid() {
-        grid.setItems(roomService.getAll());
+        grid.setItems(departmentService.getAll());
     }
 
-    private void populateForm(RoomDto value) {
-        this.currentRoom = value; // DTO usually detached, but we need ID
+    private void populateForm(DepartmentEntity value) {
+        this.currentDepartment = value;
         binder.readBean(value);
         deleteButton.setVisible(true);
     }
 
     private void clearForm() {
-        this.currentRoom = null;
-        binder.readBean(new RoomDto());
+        this.currentDepartment = null;
+        binder.readBean(new DepartmentEntity());
         grid.asSingleSelect().clear();
         deleteButton.setVisible(false);
     }
 
     private void save() {
-        RoomDto dto = new RoomDto();
-        if (this.currentRoom != null) {
-            dto = this.currentRoom; // Preserves ID?
-            // Actually, binder.writeBean writes to the passed object.
-            // If populateForm passed a DTO from the grid, that DTO has the ID.
-            // But binder.readBean makes a copy or reads properties.
-            // binder.writeBean(dto) writes fields.
-            // If I reuse 'currentRoom', I am modifying the object in the grid if it's the
-            // same ref.
-            // Actually with DTOs, getting from Service logic might return new instances.
-            // Safer to use the ID from currentRoom if present.
+        DepartmentEntity entity = new DepartmentEntity();
+        if (this.currentDepartment != null) {
+            entity = this.currentDepartment;
         }
 
         try {
-            if (binder.writeBeanIfValid(dto)) {
-                roomService.save(dto);
+            if (binder.writeBeanIfValid(entity)) {
+                if (entity.getId() == null) {
+                    departmentService.create(entity);
+                } else {
+                    departmentService.update(entity.getId(), entity);
+                }
                 refreshGrid();
                 clearForm();
-                Notification.show("Room saved successfully")
+                Notification.show("Department saved successfully")
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
         } catch (Exception e) {
@@ -194,16 +188,16 @@ public class AdminRoomsView extends VerticalLayout {
     }
 
     private void delete() {
-        if (currentRoom == null)
+        if (currentDepartment == null)
             return;
         try {
-            roomService.delete(currentRoom.getId());
+            departmentService.delete(currentDepartment.getId());
             refreshGrid();
             clearForm();
-            Notification.show("Room deleted")
+            Notification.show("Department deleted")
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (Exception e) {
-            Notification.show("Cannot delete: " + e.getMessage())
+            Notification.show("Cannot delete (possibly linked): " + e.getMessage())
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

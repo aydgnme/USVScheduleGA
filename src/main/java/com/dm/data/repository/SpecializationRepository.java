@@ -10,6 +10,11 @@ import java.util.Optional;
 @Repository
 public interface SpecializationRepository extends JpaRepository<SpecializationEntity, Long> {
     Optional<SpecializationEntity> findByCode(String code);
+
     List<SpecializationEntity> findByDepartmentId(Long departmentId);
+
     List<SpecializationEntity> findByStudyCycle(String studyCycle);
+
+    @org.springframework.data.jpa.repository.Query("SELECT s FROM SpecializationEntity s JOIN FETCH s.department")
+    List<SpecializationEntity> findAllWithDepartment();
 }

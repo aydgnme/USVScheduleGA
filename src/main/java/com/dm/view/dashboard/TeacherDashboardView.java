@@ -66,6 +66,21 @@ public class TeacherDashboardView extends VerticalLayout {
         loadDashboardData();
     }
 
+    private HorizontalLayout createStatsRow(int courseCount, int totalCredits) {
+        HorizontalLayout stats = new HorizontalLayout();
+        stats.setWidthFull();
+        stats.setJustifyContentMode(JustifyContentMode.CENTER);
+        stats.setSpacing(true);
+        stats.getStyle().set("flex-wrap", "wrap");
+
+        stats.add(
+                new com.dm.view.components.StatsCard("Courses Taught", String.valueOf(courseCount), "class",
+                        LumoUtility.TextColor.PRIMARY),
+                new com.dm.view.components.StatsCard("Total Credits", String.valueOf(totalCredits), "school",
+                        LumoUtility.TextColor.SUCCESS));
+        return stats;
+    }
+
     private HorizontalLayout createNavigationCards() {
         HorizontalLayout cards = new HorizontalLayout();
         cards.setWidthFull();
@@ -122,7 +137,11 @@ public class TeacherDashboardView extends VerticalLayout {
 
         if (courses.isEmpty()) {
             courseListLayout.add(new Paragraph("No courses available."));
+            addComponentAtIndex(1, createStatsRow(0, 0)); // Add stats even if empty
         } else {
+            int totalCredits = courses.stream().mapToInt(CourseDto::getCredits).sum();
+            addComponentAtIndex(1, createStatsRow(courses.size(), totalCredits)); // Add stats row below header
+
             for (CourseDto course : courses) {
                 courseListLayout.add(createCourseCard(course));
             }

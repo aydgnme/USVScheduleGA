@@ -58,11 +58,22 @@ public class MainLayout extends AppLayout {
             SideNavItem managementGroup = new SideNavItem("Management");
             managementGroup.setPrefixComponent(new GoogleIcon("admin_panel_settings"));
             managementGroup.addItem(
+                    new SideNavItem("Faculties", com.dm.view.admin.AdminFacultyView.class, new GoogleIcon("domain")));
+            managementGroup.addItem(
+                    new SideNavItem("Departments", com.dm.view.admin.AdminDepartmentView.class,
+                            new GoogleIcon("business")));
+            managementGroup.addItem(
+                    new SideNavItem("Specializations", com.dm.view.admin.AdminSpecializationView.class,
+                            new GoogleIcon("school")));
+            managementGroup.addItem(
                     new SideNavItem("Teachers", com.dm.view.admin.AdminTeachersView.class, new GoogleIcon("school")));
             managementGroup.addItem(
                     new SideNavItem("Rooms", com.dm.view.admin.AdminRoomsView.class, new GoogleIcon("meeting_room")));
             managementGroup.addItem(
                     new SideNavItem("Groups", com.dm.view.admin.AdminGroupsView.class, new GoogleIcon("groups")));
+            managementGroup.addItem(
+                    new SideNavItem("Timeslots", com.dm.view.admin.AdminTimeslotView.class,
+                            new GoogleIcon("schedule")));
             nav.addItem(managementGroup);
 
             SideNavItem academicGroup = new SideNavItem("Academic");
@@ -74,6 +85,10 @@ public class MainLayout extends AppLayout {
         } else if (hasRole("ROLE_SECRETARY")) {
             nav.addItem(new SideNavItem("Dashboard", SecretaryDashboardView.class, new GoogleIcon("dashboard")));
             nav.addItem(new SideNavItem("Timeslots", TimeslotView.class, new GoogleIcon("schedule")));
+            nav.addItem(new SideNavItem("Course Assignments", com.dm.view.secretary.SecretaryCourseAssignmentView.class,
+                    new GoogleIcon("assignment_ind")));
+            nav.addItem(new SideNavItem("Schedule Editor", com.dm.view.secretary.SecretaryScheduleView.class,
+                    new GoogleIcon("edit_calendar")));
             nav.addItem(new SideNavItem("Courses", CourseView.class, new GoogleIcon("menu_book")));
             nav.addItem(new SideNavItem("Rooms", RoomView.class, new GoogleIcon("meeting_room")));
 

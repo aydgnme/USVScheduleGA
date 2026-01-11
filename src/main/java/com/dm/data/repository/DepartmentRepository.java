@@ -10,5 +10,9 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Long> {
     Optional<DepartmentEntity> findByCode(String code);
+
     List<DepartmentEntity> findByFacultyId(Long facultyId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT d FROM DepartmentEntity d JOIN FETCH d.faculty")
+    List<DepartmentEntity> findAllWithFaculty();
 }

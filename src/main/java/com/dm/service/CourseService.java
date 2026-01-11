@@ -22,10 +22,20 @@ public class CourseService {
     private final CourseMapper mapper;
 
     public CourseService(CourseRepository repository,
-            com.dm.data.repository.CourseOfferingRepository offeringRepository, CourseMapper mapper) {
+            com.dm.data.repository.CourseOfferingRepository offeringRepository, CourseMapper mapper,
+            com.dm.data.repository.DepartmentRepository departmentRepository) {
         this.repository = repository;
         this.offeringRepository = offeringRepository;
         this.mapper = mapper;
+        this.departmentRepository = departmentRepository;
+    }
+
+    private final com.dm.data.repository.DepartmentRepository departmentRepository;
+
+    public List<CourseDto> findByDepartment(Long departmentId) {
+        return repository.findByDepartmentId(departmentId).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<CourseDto> getAll() {
@@ -46,6 +56,14 @@ public class CourseService {
 
     public CourseDto save(CourseRequestDto request) {
         CourseEntity entity = mapper.toEntityFromRequest(request);
+        return mapper.toDto(repository.save(entity));
+    }
+
+    public CourseDto save(CourseDto dto) {
+        CourseEntity entity = mapper.toEntity(dto);
+        if (dto.getDepartmentId() != null) {
+            entity.setDepartment(departmentRepository.getReferenceById(dto.getDepartmentId()));
+        }
         return mapper.toDto(repository.save(entity));
     }
 
@@ -72,5 +90,9 @@ public class CourseService {
                 .distinct() // Return unique courses (even if taught to multiple groups)
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public long count() {
+        return repository.count();
     }
 }

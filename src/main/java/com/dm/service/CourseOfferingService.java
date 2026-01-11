@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Service for managing course offerings (assignments of courses to groups/teachers).
+ * Service for managing course offerings (assignments of courses to
+ * groups/teachers).
  */
 @Service
 public class CourseOfferingService {
@@ -38,7 +39,7 @@ public class CourseOfferingService {
     }
 
     public List<CourseOfferingDto> getAll() {
-        return repository.findAll().stream()
+        return repository.findAllWithDetails().stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -62,7 +63,14 @@ public class CourseOfferingService {
     }
 
     public CourseOfferingDto save(CourseOfferingDto dto) {
-        CourseOfferingEntity entity = new CourseOfferingEntity();
+        CourseOfferingEntity entity;
+        if (dto.getId() != null) {
+            entity = repository.findById(dto.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Offering not found: " + dto.getId()));
+        } else {
+            entity = new CourseOfferingEntity();
+        }
+
         entity.setCourse(courseRepo.findById(dto.getCourseId())
                 .orElseThrow(() -> new IllegalArgumentException("Course not found: " + dto.getCourseId())));
         entity.setGroup(groupRepo.findById(dto.getGroupId())

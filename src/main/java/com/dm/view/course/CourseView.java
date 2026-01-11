@@ -21,9 +21,16 @@ public class CourseView extends VerticalLayout {
     Grid<CourseDto> grid = new Grid<>(CourseDto.class);
     CourseForm form;
     CourseService courseService;
+    com.dm.service.DepartmentService departmentService;
+    com.dm.service.SecretaryService secretaryService;
 
-    public CourseView(CourseService courseService) {
+    public CourseView(CourseService courseService,
+            com.dm.service.DepartmentService departmentService,
+            com.dm.service.SecretaryService secretaryService) {
         this.courseService = courseService;
+        this.departmentService = departmentService;
+        this.secretaryService = secretaryService;
+
         addClassName("course-view");
         setSizeFull();
         configureGrid();
@@ -51,7 +58,15 @@ public class CourseView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(courseService.findAll());
+        if (isSecretary()) {
+            String email = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+            secretaryService.findByUserEmail(email).ifPresent(profile -> {
+                grid.setItems(courseService.findByDepartment(profile.getDepartment().getId()));
+            });
+        } else {
+            grid.setItems(courseService.findAll());
+        }
     }
 
     private Component getContent() {
@@ -64,7 +79,16 @@ public class CourseView extends VerticalLayout {
     }
 
     private void configureForm() {
-        form = new CourseForm();
+        java.util.List<com.dm.dto.DepartmentDto> departmentDtos = departmentService.getAll().stream()
+                .map(dept -> new com.dm.dto.DepartmentDto(
+                        dept.getId(),
+                        dept.getCode(),
+                        dept.getName(),
+                        dept.getFaculty().getId(),
+                        null, null)) // simplified DTO mapping
+                .toList();
+
+        form = new CourseForm(departmentDtos);
         form.setWidth("25em");
         form.addSaveListener(this::saveCourse);
         form.addDeleteListener(this::deleteCourse);
@@ -72,8 +96,20 @@ public class CourseView extends VerticalLayout {
     }
 
     private void saveCourse(CourseForm.SaveEvent event) {
-        // TODO: Convert CourseDto to CourseRequestDto
-        // courseService.save(event.getCourse());
+        CourseDto courseDto = event.getCourse();
+        // If secretary, enforce their department if it's missing (though form should
+        // handle it)
+        if (isSecretary()) {
+            String email = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+            secretaryService.findByUserEmail(email).ifPresent(profile -> {
+                // We rely on the form having set the value correctly, or we could force it here
+                // But DTO is immutable, so we'd need to reconstruct.
+                // Assuming form field matches DTO structure via Binder.
+            });
+        }
+
+        courseService.save(courseDto);
         updateList();
         closeEditor();
     }
@@ -89,7 +125,7 @@ public class CourseView extends VerticalLayout {
     private void configureGrid() {
         grid.addClassName("course-grid");
         grid.setSizeFull();
-        grid.setColumns("code", "title", "componentType", "credits", "semester", "parity");
+        grid.setColumns("code", "title", "departmentName", "componentType", "credits", "semester", "parity");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
         grid.asSingleSelect().addValueChangeListener(e -> editCourse(e.getValue()));
     }
@@ -99,6 +135,24 @@ public class CourseView extends VerticalLayout {
             closeEditor();
         } else {
             form.setCourse(course);
+
+            if (isSecretary()) {
+                form.department.setReadOnly(true);
+                // Ensure the secretary's department is set on the form if it's a new course
+                if (course.getId() == null) {
+                    String email = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                            .getAuthentication().getName();
+                    secretaryService.findByUserEmail(email).ifPresent(profile -> {
+                        com.dm.data.entity.DepartmentEntity dept = profile.getDepartment();
+                        com.dm.dto.DepartmentDto deptDto = new com.dm.dto.DepartmentDto(dept.getId(), dept.getCode(),
+                                dept.getName(), dept.getFaculty().getId(), null, null);
+                        form.department.setValue(deptDto);
+                    });
+                }
+            } else {
+                form.department.setReadOnly(false);
+            }
+
             form.setVisible(true);
             addClassName("editing");
         }
@@ -115,6 +169,13 @@ public class CourseView extends VerticalLayout {
 
     private void addCourse() {
         grid.asSingleSelect().clear();
-        editCourse(new CourseDto(null, null, null, null, 0, 0, null));
+        editCourse(new CourseDto(null, null, null, null, 0, 0, null, null, null));
+    }
+
+    private boolean isSecretary() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_SECRETARY"));
     }
 }

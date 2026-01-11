@@ -21,7 +21,7 @@ public class DepartmentService {
     }
 
     public List<DepartmentEntity> getAll() {
-        return departmentRepository.findAll();
+        return departmentRepository.findAllWithFaculty();
     }
 
     public Optional<DepartmentEntity> findById(Long id) {

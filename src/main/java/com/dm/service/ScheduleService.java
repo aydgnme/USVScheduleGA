@@ -20,9 +20,24 @@ public class ScheduleService {
     private final ScheduleEntryRepository repository;
     private final ScheduleEntryMapper mapper;
 
-    public ScheduleService(ScheduleEntryRepository repository, ScheduleEntryMapper mapper) {
+    private final com.dm.data.repository.CourseOfferingRepository offeringRepo;
+    private final com.dm.data.repository.RoomRepository roomRepo;
+    private final com.dm.data.repository.TimeslotRepository timeslotRepo;
+    private final com.dm.data.repository.TeacherRepository teacherRepo;
+
+    public ScheduleService(
+            ScheduleEntryRepository repository,
+            ScheduleEntryMapper mapper,
+            com.dm.data.repository.CourseOfferingRepository offeringRepo,
+            com.dm.data.repository.RoomRepository roomRepo,
+            com.dm.data.repository.TimeslotRepository timeslotRepo,
+            com.dm.data.repository.TeacherRepository teacherRepo) {
         this.repository = repository;
         this.mapper = mapper;
+        this.offeringRepo = offeringRepo;
+        this.roomRepo = roomRepo;
+        this.timeslotRepo = timeslotRepo;
+        this.teacherRepo = teacherRepo;
     }
 
     /**
@@ -83,8 +98,23 @@ public class ScheduleService {
      * Create new schedule entry.
      */
     public ScheduleEntryDto save(ScheduleEntryDto dto) {
-        var entity = new com.dm.data.entity.ScheduleEntryEntity();
-        // Manual mapping since DTO is simpler for creation
+        var entity = (dto.getId() != null)
+                ? repository.findById(dto.getId()).orElse(new com.dm.data.entity.ScheduleEntryEntity())
+                : new com.dm.data.entity.ScheduleEntryEntity();
+
+        if (dto.getOfferingId() != null) {
+            entity.setOffering(offeringRepo.findById(dto.getOfferingId())
+                    .orElseThrow(() -> new IllegalArgumentException("Offering not found")));
+        }
+        if (dto.getRoomId() != null) {
+            entity.setRoom(roomRepo.findById(dto.getRoomId())
+                    .orElseThrow(() -> new IllegalArgumentException("Room not found")));
+        }
+        if (dto.getTimeslotId() != null) {
+            entity.setTimeslot(timeslotRepo.findById(dto.getTimeslotId())
+                    .orElseThrow(() -> new IllegalArgumentException("Timeslot not found")));
+        }
+
         entity.setWeekPattern(dto.getWeekPattern());
         entity.setStatus(dto.getStatus());
         return mapper.toDto(repository.save(entity));
@@ -95,8 +125,9 @@ public class ScheduleService {
     }
 
     public List<ScheduleEntryDto> getByTeacherEmail(String email) {
-        // This would require joining ScheduleEntry -> CourseOffering -> Teacher -> User
-        // For now, return empty list - implement with proper repository query if needed
-        return List.of();
+        var teacher = teacherRepo.findByUserEmail(email).orElse(null);
+        if (teacher == null)
+            return List.of();
+        return getByTeacherId(teacher.getId());
     }
 }

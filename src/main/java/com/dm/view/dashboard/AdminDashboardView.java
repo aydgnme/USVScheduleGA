@@ -16,7 +16,20 @@ import jakarta.annotation.security.RolesAllowed;
 @RolesAllowed("ADMIN")
 public class AdminDashboardView extends VerticalLayout {
 
-    public AdminDashboardView() {
+    private final com.dm.service.TeacherService teacherService;
+    private final com.dm.service.RoomService roomService;
+    private final com.dm.service.GroupService groupService;
+    private final com.dm.service.CourseService courseService;
+
+    public AdminDashboardView(com.dm.service.TeacherService teacherService,
+            com.dm.service.RoomService roomService,
+            com.dm.service.GroupService groupService,
+            com.dm.service.CourseService courseService) {
+        this.teacherService = teacherService;
+        this.roomService = roomService;
+        this.groupService = groupService;
+        this.courseService = courseService;
+
         addClassName("admin-dashboard-view");
         setSizeFull();
         setPadding(true);
@@ -28,10 +41,13 @@ public class AdminDashboardView extends VerticalLayout {
         dashIcon.getStyle().set("font-size", "32px");
         header.add(dashIcon);
 
+        // Stats
+        HorizontalLayout stats = createStatsRow();
+
         // Navigation cards
         HorizontalLayout navigationCards = createNavigationCards();
 
-        add(header, navigationCards);
+        add(header, stats, navigationCards);
     }
 
     private HorizontalLayout createNavigationCards() {
@@ -49,6 +65,19 @@ public class AdminDashboardView extends VerticalLayout {
         cards.getStyle().set("flex-wrap", "wrap");
 
         return cards;
+    }
+
+    private HorizontalLayout createStatsRow() {
+        HorizontalLayout stats = new HorizontalLayout();
+        stats.setWidthFull();
+        stats.setJustifyContentMode(JustifyContentMode.CENTER);
+        stats.setSpacing(true);
+        stats.getStyle().set("flex-wrap", "wrap");
+
+        // Use standard service instances (injected via constructor)
+        // Note: For Vaadin views, Spring injects into constructor. We need to update
+        // constructor.
+        return stats;
     }
 
     private VerticalLayout createIconNavigationCard(String iconName, String route, String tooltip) {

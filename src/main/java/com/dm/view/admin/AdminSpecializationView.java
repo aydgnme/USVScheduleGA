@@ -1,8 +1,9 @@
 package com.dm.view.admin;
 
-import com.dm.dto.RoomDto;
-import com.dm.model.types.RoomType;
-import com.dm.service.RoomService;
+import com.dm.data.entity.DepartmentEntity;
+import com.dm.data.entity.SpecializationEntity;
+import com.dm.service.DepartmentService;
+import com.dm.service.SpecializationService;
 import com.dm.view.components.AppCard;
 import com.dm.view.components.PageHeader;
 import com.dm.view.components.SearchToolbar;
@@ -18,7 +19,6 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -26,37 +26,36 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
-@Route(value = "admin/rooms", layout = MainLayout.class)
-@PageTitle("Room Management | USV Schedule")
+@Route(value = "admin/specializations", layout = MainLayout.class)
+@PageTitle("Specialization Management | USV Schedule")
 @RolesAllowed("ROLE_ADMIN")
-public class AdminRoomsView extends VerticalLayout {
+public class AdminSpecializationView extends VerticalLayout {
 
-    private final RoomService roomService;
+    private final SpecializationService specializationService;
+    private final DepartmentService departmentService;
 
-    private Grid<RoomDto> grid;
+    private Grid<SpecializationEntity> grid;
     private TextField code;
-    private ComboBox<RoomType> roomType;
-    private IntegerField capacity;
-    private TextField building;
-
-    // Additional fields from DTO if any? RoomDto has id, code, roomType, capacity,
-    // building.
+    private TextField name;
+    private ComboBox<String> studyCycle;
+    private ComboBox<DepartmentEntity> department;
 
     private Button saveButton;
     private Button cancelButton;
     private Button deleteButton;
-    private Binder<RoomDto> binder;
+    private Binder<SpecializationEntity> binder;
 
-    private RoomDto currentRoom;
+    private SpecializationEntity currentSpecialization;
 
-    public AdminRoomsView(RoomService roomService) {
-        this.roomService = roomService;
+    public AdminSpecializationView(SpecializationService specializationService, DepartmentService departmentService) {
+        this.specializationService = specializationService;
+        this.departmentService = departmentService;
 
-        addClassName("admin-rooms-view");
+        addClassName("admin-spec-view");
         setSpacing(false);
         setSizeFull();
 
-        PageHeader header = new PageHeader("Room Management");
+        PageHeader header = new PageHeader("Specialization Management");
 
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
@@ -75,18 +74,19 @@ public class AdminRoomsView extends VerticalLayout {
         AppCard card = new AppCard();
         card.setHeightFull();
 
-        SearchToolbar toolbar = new SearchToolbar("Search rooms...", this::onSearch);
-        Button addButton = new Button("New Room", e -> clearForm());
+        SearchToolbar toolbar = new SearchToolbar("Search specializations...", this::onSearch);
+        Button addButton = new Button("New Specialization", e -> clearForm());
         toolbar.addPrimaryAction(addButton);
 
-        grid = new Grid<>(RoomDto.class, false);
+        grid = new Grid<>(SpecializationEntity.class, false);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
         grid.setSizeFull();
 
-        grid.addColumn(RoomDto::getCode).setHeader("Code").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getRoomType).setHeader("Type").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getCapacity).setHeader("Cap").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getBuilding).setHeader("Building").setSortable(true).setFlexGrow(1);
+        grid.addColumn(SpecializationEntity::getCode).setHeader("Code").setSortable(true).setAutoWidth(true);
+        grid.addColumn(SpecializationEntity::getName).setHeader("Name").setSortable(true).setFlexGrow(1);
+        grid.addColumn(SpecializationEntity::getStudyCycle).setHeader("Cycle").setSortable(true).setAutoWidth(true);
+        grid.addColumn(spec -> spec.getDepartment() != null ? spec.getDepartment().getCode() : "-")
+                .setHeader("Department").setSortable(true).setAutoWidth(true);
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             if (e.getValue() != null) {
@@ -107,15 +107,18 @@ public class AdminRoomsView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
 
         code = new TextField("Code");
-        roomType = new ComboBox<>("Type");
-        roomType.setItems(RoomType.values());
+        name = new TextField("Name");
 
-        capacity = new IntegerField("Capacity");
-        building = new TextField("Building");
+        studyCycle = new ComboBox<>("Study Cycle");
+        studyCycle.setItems("BACHELOR", "MASTER", "DOCTORATE", "CONVERSION");
 
-        formLayout.add(code, roomType, capacity, building);
+        department = new ComboBox<>("Department");
+        department.setItemLabelGenerator(DepartmentEntity::getName);
+        department.setItems(departmentService.getAll());
 
-        binder = new BeanValidationBinder<>(RoomDto.class);
+        formLayout.add(code, name, studyCycle, department);
+
+        binder = new BeanValidationBinder<>(SpecializationEntity.class);
         binder.bindInstanceFields(this);
 
         saveButton = new Button("Save", e -> save());
@@ -135,56 +138,52 @@ public class AdminRoomsView extends VerticalLayout {
     }
 
     private void onSearch(String searchTerm) {
-        grid.setItems(roomService.getAll().stream()
-                .filter(r -> matches(r, searchTerm))
+        grid.setItems(specializationService.getAll().stream()
+                .filter(s -> matches(s, searchTerm))
                 .toList());
     }
 
-    private boolean matches(RoomDto r, String term) {
+    private boolean matches(SpecializationEntity s, String term) {
         if (term == null || term.isEmpty())
             return true;
         String lower = term.toLowerCase();
-        return (r.getCode() != null && r.getCode().toLowerCase().contains(lower)) ||
-                (r.getBuilding() != null && r.getBuilding().toLowerCase().contains(lower));
+        return (s.getName() != null && s.getName().toLowerCase().contains(lower)) ||
+                (s.getCode() != null && s.getCode().toLowerCase().contains(lower));
     }
 
     private void refreshGrid() {
-        grid.setItems(roomService.getAll());
+        grid.setItems(specializationService.getAll());
     }
 
-    private void populateForm(RoomDto value) {
-        this.currentRoom = value; // DTO usually detached, but we need ID
+    private void populateForm(SpecializationEntity value) {
+        this.currentSpecialization = value;
         binder.readBean(value);
         deleteButton.setVisible(true);
     }
 
     private void clearForm() {
-        this.currentRoom = null;
-        binder.readBean(new RoomDto());
+        this.currentSpecialization = null;
+        binder.readBean(new SpecializationEntity());
         grid.asSingleSelect().clear();
         deleteButton.setVisible(false);
     }
 
     private void save() {
-        RoomDto dto = new RoomDto();
-        if (this.currentRoom != null) {
-            dto = this.currentRoom; // Preserves ID?
-            // Actually, binder.writeBean writes to the passed object.
-            // If populateForm passed a DTO from the grid, that DTO has the ID.
-            // But binder.readBean makes a copy or reads properties.
-            // binder.writeBean(dto) writes fields.
-            // If I reuse 'currentRoom', I am modifying the object in the grid if it's the
-            // same ref.
-            // Actually with DTOs, getting from Service logic might return new instances.
-            // Safer to use the ID from currentRoom if present.
+        SpecializationEntity entity = new SpecializationEntity();
+        if (this.currentSpecialization != null) {
+            entity = this.currentSpecialization;
         }
 
         try {
-            if (binder.writeBeanIfValid(dto)) {
-                roomService.save(dto);
+            if (binder.writeBeanIfValid(entity)) {
+                if (entity.getId() == null) {
+                    specializationService.create(entity);
+                } else {
+                    specializationService.update(entity.getId(), entity);
+                }
                 refreshGrid();
                 clearForm();
-                Notification.show("Room saved successfully")
+                Notification.show("Specialization saved successfully")
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
         } catch (Exception e) {
@@ -194,13 +193,13 @@ public class AdminRoomsView extends VerticalLayout {
     }
 
     private void delete() {
-        if (currentRoom == null)
+        if (currentSpecialization == null)
             return;
         try {
-            roomService.delete(currentRoom.getId());
+            specializationService.delete(currentSpecialization.getId());
             refreshGrid();
             clearForm();
-            Notification.show("Room deleted")
+            Notification.show("Specialization deleted")
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (Exception e) {
             Notification.show("Cannot delete: " + e.getMessage())

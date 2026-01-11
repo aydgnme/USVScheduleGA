@@ -23,6 +23,7 @@ public class CourseForm extends FormLayout {
     TextField code = new TextField("Code");
     TextField title = new TextField("Title");
     ComboBox<com.dm.model.types.CourseComponentType> componentType = new ComboBox<>("Type");
+    public ComboBox<com.dm.dto.DepartmentDto> department = new ComboBox<>("Department");
     IntegerField credits = new IntegerField("Credits");
     IntegerField semester = new IntegerField("Semester");
     ComboBox<com.dm.model.types.WeekParity> parity = new ComboBox<>("Parity");
@@ -31,16 +32,19 @@ public class CourseForm extends FormLayout {
     Button delete = new Button("Delete");
     Button close = new Button("Cancel");
 
-    public CourseForm() {
+    public CourseForm(java.util.List<com.dm.dto.DepartmentDto> departments) {
         addClassName("course-form");
 
         componentType.setItems(com.dm.model.types.CourseComponentType.values());
         parity.setItems(com.dm.model.types.WeekParity.values());
+        department.setItems(departments);
+        department.setItemLabelGenerator(com.dm.dto.DepartmentDto::getName);
 
         binder.bindInstanceFields(this);
 
         add(code,
                 title,
+                department,
                 componentType,
                 credits,
                 semester,

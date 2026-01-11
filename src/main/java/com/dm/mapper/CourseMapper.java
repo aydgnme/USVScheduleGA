@@ -14,10 +14,13 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CourseMapper {
 
+    @Mapping(source = "department.id", target = "departmentId")
+    @Mapping(source = "department.name", target = "departmentName")
     CourseDto toDto(CourseEntity entity);
 
     Course toDomain(CourseEntity entity);
 
+    @Mapping(target = "department", ignore = true)
     CourseEntity toEntity(CourseDto dto);
 
     CourseEntity toEntityFromDomain(Course domain);

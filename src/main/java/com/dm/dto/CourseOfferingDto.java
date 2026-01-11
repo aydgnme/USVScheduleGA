@@ -1,14 +1,18 @@
 package com.dm.dto;
 
 import com.dm.model.types.WeekParity;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 /**
  * DTO for course offerings (assignment of a course to a group and teacher).
  */
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseOfferingDto implements Serializable {
     Long id;
     Long courseId;

@@ -15,7 +15,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
 @PermitAll
-@Route(value="rooms", layout = MainLayout.class)
+@Route(value = "rooms", layout = MainLayout.class)
 @PageTitle("Rooms | USV Schedule GA")
 public class RoomView extends VerticalLayout {
     Grid<RoomDto> grid = new Grid<>(RoomDto.class);
@@ -78,7 +78,7 @@ public class RoomView extends VerticalLayout {
     private void configureGrid() {
         grid.addClassName("room-grid");
         grid.setSizeFull();
-        grid.setColumns("code", "type", "capacity");
+        grid.setColumns("code", "roomType", "capacity", "building", "computers");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
         grid.asSingleSelect().addValueChangeListener(e -> editRoom(e.getValue()));
     }

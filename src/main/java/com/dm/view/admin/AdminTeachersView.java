@@ -1,42 +1,60 @@
 package com.dm.view.admin;
 
-import com.dm.dto.TeacherDto;
 import com.dm.dto.DepartmentDto;
-import com.dm.service.TeacherService;
+import com.dm.dto.TeacherDto;
+import com.dm.mapper.DepartmentMapper;
 import com.dm.service.DepartmentService;
+import com.dm.service.TeacherService;
+import com.dm.view.components.AppCard;
+import com.dm.view.components.PageHeader;
+import com.dm.view.components.SearchToolbar;
 import com.dm.view.layout.MainLayout;
-import com.dm.view.components.GoogleIcon;
-import com.vaadin.flow.theme.lumo.LumoUtility;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.dm.mapper.DepartmentMapper;
 import jakarta.annotation.security.RolesAllowed;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Route(value = "admin/teachers", layout = MainLayout.class)
-@PageTitle("Manage Teachers | USV Schedule")
-@RolesAllowed("ADMIN")
+@PageTitle("Teacher Management | USV Schedule")
+@RolesAllowed("ROLE_ADMIN")
 public class AdminTeachersView extends VerticalLayout {
 
     private final TeacherService teacherService;
     private final DepartmentService departmentService;
     private final DepartmentMapper departmentMapper;
 
-    private Grid<TeacherDto> grid = new Grid<>(TeacherDto.class);
-    private TextField filterText = new TextField();
-    private ComboBox<DepartmentDto> departmentFilter = new ComboBox<>("Department");
+    private Grid<TeacherDto> grid;
+    private TextField firstName;
+    private TextField lastName;
+    private EmailField email;
+    private IntegerField maxHoursWeekly;
+    private MultiSelectComboBox<DepartmentDto> departments;
+
+    private Button saveButton;
+    private Button cancelButton;
+    private Button deleteButton;
+    private Binder<TeacherDto> binder;
+
+    private TeacherDto currentTeacher;
 
     public AdminTeachersView(TeacherService teacherService, DepartmentService departmentService,
             DepartmentMapper departmentMapper) {
@@ -45,128 +63,167 @@ public class AdminTeachersView extends VerticalLayout {
         this.departmentMapper = departmentMapper;
 
         addClassName("admin-teachers-view");
+        setSpacing(false);
         setSizeFull();
-        configureGrid();
-        configureFilters();
 
-        // Header
-        HorizontalLayout header = new HorizontalLayout();
-        header.setAlignItems(Alignment.CENTER);
-        GoogleIcon headerIcon = new GoogleIcon("school");
-        headerIcon.getStyle().set("font-size", "32px");
-        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
-        com.vaadin.flow.component.html.H2 pageTitle = new com.vaadin.flow.component.html.H2("Manage Teachers");
-        pageTitle.addClassNames(LumoUtility.Margin.NONE);
-        header.add(headerIcon, pageTitle);
+        PageHeader header = new PageHeader("Teacher Management");
 
-        add(header, getToolbar(), getContent());
-        updateList();
+        SplitLayout splitLayout = new SplitLayout();
+        splitLayout.setSizeFull();
+        splitLayout.setSplitterPosition(40);
+
+        createGrid(splitLayout);
+        createEditor(splitLayout);
+
+        add(header, splitLayout);
+
+        refreshGrid();
+        clearForm();
     }
 
-    private Component getContent() {
-        HorizontalLayout content = new HorizontalLayout(grid);
-        content.setFlexGrow(2, grid);
-        content.addClassNames("content");
-        content.setSizeFull();
-        return content;
-    }
+    private void createGrid(SplitLayout splitLayout) {
+        AppCard card = new AppCard();
+        card.setHeightFull();
 
-    private void configureGrid() {
-        grid.addClassName("clarity-grid");
-        grid.setSizeFull();
-        grid.removeAllColumns(); // We'll add them manually for control
+        SearchToolbar toolbar = new SearchToolbar("Search teachers...", this::onSearch);
+        Button addButton = new Button("New Teacher", e -> clearForm());
+        toolbar.addPrimaryAction(addButton);
 
-        grid.addColumn(TeacherDto::getFirstName).setHeader("First Name").setSortable(true);
-        grid.addColumn(TeacherDto::getLastName).setHeader("Last Name").setSortable(true);
-        grid.addColumn(TeacherDto::getEmail).setHeader("Email").setSortable(true);
-
-        grid.addColumn(teacher -> {
-            if (teacher.getDepartments() == null)
-                return "";
-            return teacher.getDepartments().stream()
-                    .map(DepartmentDto::getCode)
-                    .collect(Collectors.joining(", "));
-        }).setHeader("Departments");
-
-        grid.addColumn(TeacherDto::getMaxHoursWeekly).setHeader("Max Hours");
-
-        // Action Column (Edit)
-        grid.addComponentColumn(teacher -> {
-            Button editButton = new Button(new GoogleIcon("edit"));
-            editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            editButton.addClickListener(e -> editTeacher(teacher));
-            return editButton;
-        }).setHeader("Actions");
-
+        grid = new Grid<>(TeacherDto.class, false);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
-        grid.asSingleSelect().addValueChangeListener(event -> editTeacher(event.getValue()));
+        grid.setSizeFull();
+
+        grid.addColumn(TeacherDto::getFirstName).setHeader("First Name").setSortable(true).setAutoWidth(true);
+        grid.addColumn(TeacherDto::getLastName).setHeader("Last Name").setSortable(true).setAutoWidth(true);
+        grid.addColumn(TeacherDto::getEmail).setHeader("Email").setSortable(true).setFlexGrow(1);
+        grid.addColumn(t -> t.getDepartments().stream()
+                .map(DepartmentDto::getCode)
+                .collect(Collectors.joining(", ")))
+                .setHeader("Depts").setAutoWidth(true);
+
+        grid.asSingleSelect().addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                populateForm(e.getValue());
+            } else {
+                clearForm();
+            }
+        });
+
+        card.add(toolbar, grid);
+        splitLayout.addToPrimary(card);
     }
 
-    private void configureFilters() {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
+    private void createEditor(SplitLayout splitLayout) {
+        AppCard card = new AppCard();
+        card.setHeightFull();
 
-        departmentFilter.setItems(departmentService.getAll().stream()
+        FormLayout formLayout = new FormLayout();
+
+        firstName = new TextField("First Name");
+        lastName = new TextField("Last Name");
+        email = new EmailField("Email");
+        maxHoursWeekly = new IntegerField("Max Hours/Week");
+
+        departments = new MultiSelectComboBox<>("Departments");
+        departments.setItems(departmentService.getAll().stream()
                 .map(departmentMapper::toDto)
                 .collect(Collectors.toList()));
-        departmentFilter.setItemLabelGenerator(DepartmentDto::getName);
-        departmentFilter.addValueChangeListener(e -> updateList());
+        departments.setItemLabelGenerator(DepartmentDto::getName);
+
+        formLayout.add(firstName, lastName, email, maxHoursWeekly, departments);
+
+        binder = new BeanValidationBinder<>(TeacherDto.class);
+        binder.bindInstanceFields(this);
+
+        saveButton = new Button("Save", e -> save());
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        cancelButton = new Button("Cancel", e -> clearForm());
+
+        deleteButton = new Button("Delete", e -> delete());
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        deleteButton.setVisible(false);
+
+        HorizontalLayout actions = new HorizontalLayout(saveButton, cancelButton, deleteButton);
+        actions.setSpacing(true);
+
+        card.add(formLayout, actions);
+        splitLayout.addToSecondary(card);
     }
 
-    private Component getToolbar() {
-        filterText.setWidth("300px");
-        departmentFilter.setWidth("250px");
-
-        Button addTeacherButton = new Button("Add Teacher");
-        addTeacherButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        addTeacherButton.addClickListener(click -> addTeacher());
-
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, departmentFilter, addTeacherButton);
-        toolbar.addClassName("toolbar");
-        toolbar.setAlignItems(Alignment.BASELINE);
-        return toolbar;
-    }
-
-    private void updateList() {
-        // Basic filtering logic (can be pushed to service/repo for efficiency later)
-        String keyword = filterText.getValue();
-        DepartmentDto dept = departmentFilter.getValue();
-
+    private void onSearch(String searchTerm) {
         grid.setItems(teacherService.getAll().stream()
-                .filter(t -> matchesFilter(t, keyword, dept))
-                .collect(Collectors.toList()));
+                .filter(t -> matches(t, searchTerm))
+                .toList());
     }
 
-    private boolean matchesFilter(TeacherDto teacher, String keyword, DepartmentDto dept) {
-        boolean matchesKeyword = true;
-        boolean matchesDept = true;
-
-        if (keyword != null && !keyword.isEmpty()) {
-            String lowercaseKeyword = keyword.toLowerCase();
-            matchesKeyword = teacher.getFirstName().toLowerCase().contains(lowercaseKeyword) ||
-                    teacher.getLastName().toLowerCase().contains(lowercaseKeyword);
-        }
-
-        if (dept != null) {
-            matchesDept = teacher.getDepartments().stream()
-                    .anyMatch(d -> d.getId().equals(dept.getId()));
-        }
-
-        return matchesKeyword && matchesDept;
+    private boolean matches(TeacherDto t, String term) {
+        if (term == null || term.isEmpty())
+            return true;
+        String lower = term.toLowerCase();
+        return (t.getFirstName() != null && t.getFirstName().toLowerCase().contains(lower)) ||
+                (t.getLastName() != null && t.getLastName().toLowerCase().contains(lower)) ||
+                (t.getEmail() != null && t.getEmail().toLowerCase().contains(lower));
     }
 
-    private void editTeacher(TeacherDto teacher) {
-        if (teacher == null)
-            return;
-        Notification.show("Editing teacher: " + teacher.getLastName());
-        // Dialog implementation to follow
+    private void refreshGrid() {
+        grid.setItems(teacherService.getAll());
     }
 
-    private void addTeacher() {
+    private void populateForm(TeacherDto value) {
+        this.currentTeacher = value;
+        binder.readBean(value);
+        deleteButton.setVisible(true);
+    }
+
+    private void clearForm() {
+        this.currentTeacher = null;
+        TeacherDto newDto = new TeacherDto();
+        newDto.setDepartments(new HashSet<>()); // Initialize collection
+        binder.readBean(newDto);
         grid.asSingleSelect().clear();
-        Notification.show("Add teacher clicked");
-        // Dialog implementation to follow
+        deleteButton.setVisible(false);
+    }
+
+    private void save() {
+        TeacherDto dto = new TeacherDto();
+        if (this.currentTeacher != null) {
+            dto = this.currentTeacher;
+        } else {
+            dto.setDepartments(new HashSet<>());
+        }
+
+        try {
+            if (binder.writeBeanIfValid(dto)) {
+                // Ensure departments are not null
+                if (dto.getDepartments() == null) {
+                    dto.setDepartments(new HashSet<>());
+                }
+
+                teacherService.save(dto);
+                refreshGrid();
+                clearForm();
+                Notification.show("Teacher saved successfully")
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            }
+        } catch (Exception e) {
+            Notification.show("Error saving: " + e.getMessage())
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void delete() {
+        if (currentTeacher == null)
+            return;
+        try {
+            teacherService.delete(currentTeacher.getId());
+            refreshGrid();
+            clearForm();
+            Notification.show("Teacher deleted")
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        } catch (Exception e) {
+            Notification.show("Cannot delete: " + e.getMessage())
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
     }
 }

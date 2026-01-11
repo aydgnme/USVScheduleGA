@@ -1,8 +1,7 @@
 package com.dm.view.admin;
 
-import com.dm.dto.RoomDto;
-import com.dm.model.types.RoomType;
-import com.dm.service.RoomService;
+import com.dm.dto.TimeslotDto;
+import com.dm.service.TimeslotService;
 import com.dm.view.components.AppCard;
 import com.dm.view.components.PageHeader;
 import com.dm.view.components.SearchToolbar;
@@ -18,45 +17,44 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
-@Route(value = "admin/rooms", layout = MainLayout.class)
-@PageTitle("Room Management | USV Schedule")
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
+@Route(value = "admin/timeslots", layout = MainLayout.class)
+@PageTitle("Timeslot Management | USV Schedule")
 @RolesAllowed("ROLE_ADMIN")
-public class AdminRoomsView extends VerticalLayout {
+public class AdminTimeslotView extends VerticalLayout {
 
-    private final RoomService roomService;
+    private final TimeslotService timeslotService;
 
-    private Grid<RoomDto> grid;
-    private TextField code;
-    private ComboBox<RoomType> roomType;
-    private IntegerField capacity;
-    private TextField building;
-
-    // Additional fields from DTO if any? RoomDto has id, code, roomType, capacity,
-    // building.
+    private Grid<TimeslotDto> grid;
+    private ComboBox<DayOfWeek> dayOfWeek;
+    private TimePicker startTime;
+    private TimePicker endTime;
 
     private Button saveButton;
     private Button cancelButton;
     private Button deleteButton;
-    private Binder<RoomDto> binder;
+    private Binder<TimeslotDto> binder;
 
-    private RoomDto currentRoom;
+    private TimeslotDto currentTimeslot;
 
-    public AdminRoomsView(RoomService roomService) {
-        this.roomService = roomService;
+    public AdminTimeslotView(TimeslotService timeslotService) {
+        this.timeslotService = timeslotService;
 
-        addClassName("admin-rooms-view");
+        addClassName("admin-timeslots-view");
         setSpacing(false);
         setSizeFull();
 
-        PageHeader header = new PageHeader("Room Management");
+        PageHeader header = new PageHeader("Timeslot Management");
 
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
@@ -75,18 +73,18 @@ public class AdminRoomsView extends VerticalLayout {
         AppCard card = new AppCard();
         card.setHeightFull();
 
-        SearchToolbar toolbar = new SearchToolbar("Search rooms...", this::onSearch);
-        Button addButton = new Button("New Room", e -> clearForm());
+        SearchToolbar toolbar = new SearchToolbar("Search timeslots...", this::onSearch);
+        Button addButton = new Button("New Timeslot", e -> clearForm());
         toolbar.addPrimaryAction(addButton);
 
-        grid = new Grid<>(RoomDto.class, false);
+        grid = new Grid<>(TimeslotDto.class, false);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
         grid.setSizeFull();
 
-        grid.addColumn(RoomDto::getCode).setHeader("Code").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getRoomType).setHeader("Type").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getCapacity).setHeader("Cap").setSortable(true).setAutoWidth(true);
-        grid.addColumn(RoomDto::getBuilding).setHeader("Building").setSortable(true).setFlexGrow(1);
+        grid.addColumn(t -> t.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()))
+                .setHeader("Day").setSortable(true).setFlexGrow(1);
+        grid.addColumn(TimeslotDto::getStartTime).setHeader("Start").setSortable(true).setAutoWidth(true);
+        grid.addColumn(TimeslotDto::getEndTime).setHeader("End").setSortable(true).setAutoWidth(true);
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             if (e.getValue() != null) {
@@ -106,16 +104,16 @@ public class AdminRoomsView extends VerticalLayout {
 
         FormLayout formLayout = new FormLayout();
 
-        code = new TextField("Code");
-        roomType = new ComboBox<>("Type");
-        roomType.setItems(RoomType.values());
+        dayOfWeek = new ComboBox<>("Day of Week");
+        dayOfWeek.setItems(DayOfWeek.values());
+        dayOfWeek.setItemLabelGenerator(d -> d.getDisplayName(TextStyle.FULL, Locale.getDefault()));
 
-        capacity = new IntegerField("Capacity");
-        building = new TextField("Building");
+        startTime = new TimePicker("Start Time");
+        endTime = new TimePicker("End Time");
 
-        formLayout.add(code, roomType, capacity, building);
+        formLayout.add(dayOfWeek, startTime, endTime);
 
-        binder = new BeanValidationBinder<>(RoomDto.class);
+        binder = new BeanValidationBinder<>(TimeslotDto.class);
         binder.bindInstanceFields(this);
 
         saveButton = new Button("Save", e -> save());
@@ -135,56 +133,48 @@ public class AdminRoomsView extends VerticalLayout {
     }
 
     private void onSearch(String searchTerm) {
-        grid.setItems(roomService.getAll().stream()
-                .filter(r -> matches(r, searchTerm))
+        // Simple search by day name
+        grid.setItems(timeslotService.getAll().stream()
+                .filter(t -> matches(t, searchTerm))
                 .toList());
     }
 
-    private boolean matches(RoomDto r, String term) {
+    private boolean matches(TimeslotDto t, String term) {
         if (term == null || term.isEmpty())
             return true;
         String lower = term.toLowerCase();
-        return (r.getCode() != null && r.getCode().toLowerCase().contains(lower)) ||
-                (r.getBuilding() != null && r.getBuilding().toLowerCase().contains(lower));
+        return t.getDayOfWeek().toString().toLowerCase().contains(lower);
     }
 
     private void refreshGrid() {
-        grid.setItems(roomService.getAll());
+        grid.setItems(timeslotService.getAll());
     }
 
-    private void populateForm(RoomDto value) {
-        this.currentRoom = value; // DTO usually detached, but we need ID
+    private void populateForm(TimeslotDto value) {
+        this.currentTimeslot = value;
         binder.readBean(value);
         deleteButton.setVisible(true);
     }
 
     private void clearForm() {
-        this.currentRoom = null;
-        binder.readBean(new RoomDto());
+        this.currentTimeslot = null;
+        binder.readBean(new TimeslotDto());
         grid.asSingleSelect().clear();
         deleteButton.setVisible(false);
     }
 
     private void save() {
-        RoomDto dto = new RoomDto();
-        if (this.currentRoom != null) {
-            dto = this.currentRoom; // Preserves ID?
-            // Actually, binder.writeBean writes to the passed object.
-            // If populateForm passed a DTO from the grid, that DTO has the ID.
-            // But binder.readBean makes a copy or reads properties.
-            // binder.writeBean(dto) writes fields.
-            // If I reuse 'currentRoom', I am modifying the object in the grid if it's the
-            // same ref.
-            // Actually with DTOs, getting from Service logic might return new instances.
-            // Safer to use the ID from currentRoom if present.
+        TimeslotDto dto = new TimeslotDto();
+        if (this.currentTimeslot != null) {
+            dto = this.currentTimeslot;
         }
 
         try {
             if (binder.writeBeanIfValid(dto)) {
-                roomService.save(dto);
+                timeslotService.save(dto);
                 refreshGrid();
                 clearForm();
-                Notification.show("Room saved successfully")
+                Notification.show("Timeslot saved successfully")
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
         } catch (Exception e) {
@@ -194,13 +184,13 @@ public class AdminRoomsView extends VerticalLayout {
     }
 
     private void delete() {
-        if (currentRoom == null)
+        if (currentTimeslot == null)
             return;
         try {
-            roomService.delete(currentRoom.getId());
+            timeslotService.delete(currentTimeslot.getId());
             refreshGrid();
             clearForm();
-            Notification.show("Room deleted")
+            Notification.show("Timeslot deleted")
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (Exception e) {
             Notification.show("Cannot delete: " + e.getMessage())

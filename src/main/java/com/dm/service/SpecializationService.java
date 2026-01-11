@@ -19,7 +19,7 @@ public class SpecializationService {
     }
 
     public List<SpecializationEntity> getAll() {
-        return specializationRepository.findAll();
+        return specializationRepository.findAllWithDepartment();
     }
 
     public Optional<SpecializationEntity> findById(Long id) {

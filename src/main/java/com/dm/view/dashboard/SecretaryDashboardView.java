@@ -16,7 +16,17 @@ import jakarta.annotation.security.RolesAllowed;
 @RolesAllowed("SECRETARY")
 public class SecretaryDashboardView extends VerticalLayout {
 
-    public SecretaryDashboardView() {
+    private final com.dm.service.TimeslotService timeslotService;
+    private final com.dm.service.CourseService courseService;
+    private final com.dm.service.RoomService roomService;
+
+    public SecretaryDashboardView(com.dm.service.TimeslotService timeslotService,
+            com.dm.service.CourseService courseService,
+            com.dm.service.RoomService roomService) {
+        this.timeslotService = timeslotService;
+        this.courseService = courseService;
+        this.roomService = roomService;
+
         addClassName("secretary-dashboard-view");
         setSizeFull();
         setPadding(true);
@@ -28,10 +38,30 @@ public class SecretaryDashboardView extends VerticalLayout {
         dashIcon.getStyle().set("font-size", "32px");
         header.add(dashIcon);
 
+        // Stats
+        HorizontalLayout stats = createStatsRow();
+
         // Navigation cards
         HorizontalLayout navigationCards = createNavigationCards();
 
-        add(header, navigationCards);
+        add(header, stats, navigationCards);
+    }
+
+    private HorizontalLayout createStatsRow() {
+        HorizontalLayout stats = new HorizontalLayout();
+        stats.setWidthFull();
+        stats.setJustifyContentMode(JustifyContentMode.CENTER);
+        stats.setSpacing(true);
+        stats.getStyle().set("flex-wrap", "wrap");
+
+        stats.add(
+                new com.dm.view.components.StatsCard("Timeslots", String.valueOf(timeslotService.count()), "schedule",
+                        LumoUtility.TextColor.PRIMARY),
+                new com.dm.view.components.StatsCard("Courses", String.valueOf(courseService.count()), "menu_book",
+                        LumoUtility.TextColor.WARNING),
+                new com.dm.view.components.StatsCard("Rooms", String.valueOf(roomService.count()), "meeting_room",
+                        LumoUtility.TextColor.SUCCESS));
+        return stats;
     }
 
     private HorizontalLayout createNavigationCards() {

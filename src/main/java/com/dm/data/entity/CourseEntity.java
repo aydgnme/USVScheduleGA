@@ -39,4 +39,8 @@ public class CourseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private WeekParity parity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private DepartmentEntity department;
 }
