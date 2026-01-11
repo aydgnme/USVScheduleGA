@@ -2,8 +2,7 @@ package com.dm.view.dashboard;
 
 import com.dm.dto.CourseDto;
 import com.dm.dto.TeacherDto;
-import com.dm.service.CourseService;
-import com.dm.service.TeacherService;
+// Removed unused imports
 import com.dm.view.layout.MainLayout;
 import com.dm.view.components.GoogleIcon;
 import com.vaadin.flow.component.html.*;
@@ -26,71 +25,66 @@ import java.util.List;
 @RolesAllowed("TEACHER")
 public class TeacherDashboardView extends VerticalLayout {
 
-    private final CourseService courseService;
-    private final TeacherService teacherService;
+    private final com.dm.service.CourseService courseService;
+    private final com.dm.service.TeacherService teacherService;
+    private final com.dm.service.CourseOfferingService courseOfferingService;
     private final VerticalLayout courseListLayout;
 
-    public TeacherDashboardView(CourseService courseService, TeacherService teacherService) {
+    public TeacherDashboardView(com.dm.service.CourseService courseService,
+            com.dm.service.TeacherService teacherService,
+            com.dm.service.CourseOfferingService courseOfferingService) {
         this.courseService = courseService;
         this.teacherService = teacherService;
+        this.courseOfferingService = courseOfferingService;
         this.courseListLayout = new VerticalLayout();
 
         addClassName("teacher-dashboard-view");
         setSizeFull();
         setPadding(true);
 
-        // Minimal Header with Icon
+        // Header
         HorizontalLayout header = new HorizontalLayout();
         header.setAlignItems(Alignment.CENTER);
         GoogleIcon dashIcon = new GoogleIcon("dashboard");
         dashIcon.getStyle().set("font-size", "32px");
         header.add(dashIcon);
-        // Note: Removing text "Teacher Dashboard" and "Welcome" as per "yazilari yok
-        // et"
+
+        // Stats Placeholder (populated later)
+        HorizontalLayout statsContainer = new HorizontalLayout();
+        statsContainer.setWidthFull();
+        statsContainer.setJustifyContentMode(JustifyContentMode.CENTER);
+        statsContainer.setId("stats-container");
 
         // Navigation cards
-        HorizontalLayout navigationCards = createNavigationCards();
+        com.vaadin.flow.component.Component navigationCards = createNavigationCards();
 
         // Course overview section
         HorizontalLayout coursesHeader = new HorizontalLayout();
         coursesHeader.setAlignItems(Alignment.CENTER);
         GoogleIcon coursesIcon = new GoogleIcon("library_books");
         coursesIcon.getStyle().set("font-size", "24px");
-        coursesHeader.add(coursesIcon); // Icon only header
+        coursesHeader.add(coursesIcon);
 
         courseListLayout.setPadding(false);
         courseListLayout.setSpacing(true);
 
-        add(header, navigationCards, coursesHeader, courseListLayout);
+        add(header, statsContainer, navigationCards, coursesHeader, courseListLayout);
 
-        loadDashboardData();
+        loadDashboardData(statsContainer);
     }
 
-    private HorizontalLayout createStatsRow(int courseCount, int totalCredits) {
-        HorizontalLayout stats = new HorizontalLayout();
-        stats.setWidthFull();
-        stats.setJustifyContentMode(JustifyContentMode.CENTER);
-        stats.setSpacing(true);
-        stats.getStyle().set("flex-wrap", "wrap");
-
-        stats.add(
-                new com.dm.view.components.StatsCard("Courses Taught", String.valueOf(courseCount), "class",
-                        LumoUtility.TextColor.PRIMARY),
-                new com.dm.view.components.StatsCard("Total Credits", String.valueOf(totalCredits), "school",
-                        LumoUtility.TextColor.SUCCESS));
-        return stats;
-    }
-
-    private HorizontalLayout createNavigationCards() {
+    private com.vaadin.flow.component.Component createNavigationCards() {
         HorizontalLayout cards = new HorizontalLayout();
         cards.setWidthFull();
         cards.setSpacing(true);
-        cards.setJustifyContentMode(JustifyContentMode.CENTER); // Center them
+        cards.setJustifyContentMode(JustifyContentMode.CENTER);
 
         cards.add(
                 createIconNavigationCard("class", "teacher/courses", "My Courses"),
                 createIconNavigationCard("calendar_month", "teacher/schedule", "My Schedule"),
                 createIconNavigationCard("event_available", "teacher/availability", "Availability"));
+
+        cards.getStyle().set("flex-wrap", "wrap");
 
         return cards;
     }
@@ -100,55 +94,80 @@ public class TeacherDashboardView extends VerticalLayout {
         card.addClassNames(
                 LumoUtility.Background.CONTRAST_5,
                 LumoUtility.BorderRadius.MEDIUM,
-                "card-hover"); // Custom class for hover effect
-        card.setWidth("150px"); // Fixed square-ish size
+                "card-hover");
+        card.setWidth("150px");
         card.setHeight("150px");
         card.setAlignItems(Alignment.CENTER);
         card.setJustifyContentMode(JustifyContentMode.CENTER);
 
         GoogleIcon cardIcon = new GoogleIcon(iconName);
-        cardIcon.getStyle().set("font-size", "64px"); // Large Icon
+        cardIcon.getStyle().set("font-size", "64px");
         cardIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
 
-        // Tooltip for accessibility/usability since text is gone
         card.getElement().setAttribute("title", tooltip);
-
         card.add(cardIcon);
 
-        // Make the entire card clickable
         card.getStyle().set("cursor", "pointer");
         card.addClickListener(e -> card.getUI().ifPresent(ui -> ui.navigate(route)));
 
         return card;
     }
 
-    private void loadDashboardData() {
+    private void loadDashboardData(HorizontalLayout statsContainer) {
         String teacherEmail = getCurrentUserEmail();
 
         if (teacherEmail == null) {
             Notification.show("Session expired.", 3000, Notification.Position.MIDDLE)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            getUI().ifPresent(ui -> ui.navigate("login"));
             return;
         }
 
-        // Load courses for the specific teacher
-        List<CourseDto> courses = courseService.getCoursesByTeacherEmail(teacherEmail);
+        TeacherDto teacher = teacherService.findByUserEmail(teacherEmail);
+        if (teacher == null) {
+            courseListLayout.add(new Paragraph("Teacher profile not found."));
+            return;
+        }
 
-        if (courses.isEmpty()) {
-            courseListLayout.add(new Paragraph("No courses available."));
-            addComponentAtIndex(1, createStatsRow(0, 0)); // Add stats even if empty
+        // Get Offerings (Actual workload)
+        List<com.dm.dto.CourseOfferingDto> offerings = courseOfferingService.getByTeacherId(teacher.getId());
+
+        int totalHours = offerings.stream().mapToInt(com.dm.dto.CourseOfferingDto::getWeeklyHours).sum();
+        int courseCount = offerings.size();
+
+        // Calculate credits by fetching Course details (could be optimized)
+        int totalCredits = 0;
+
+        if (offerings.isEmpty()) {
+            courseListLayout.add(new Paragraph("No active course assignments."));
         } else {
-            int totalCredits = courses.stream().mapToInt(CourseDto::getCredits).sum();
-            addComponentAtIndex(1, createStatsRow(courses.size(), totalCredits)); // Add stats row below header
-
-            for (CourseDto course : courses) {
-                courseListLayout.add(createCourseCard(course));
+            for (com.dm.dto.CourseOfferingDto offering : offerings) {
+                // Fetch full course details for credits, etc.
+                java.util.Optional<com.dm.dto.CourseDto> courseOpt = courseService.findById(offering.getCourseId());
+                if (courseOpt.isPresent()) {
+                    com.dm.dto.CourseDto course = courseOpt.get();
+                    totalCredits += course.getCredits();
+                    courseListLayout.add(createCourseCard(offering, course));
+                } else {
+                    // Fallback if course not found (rare)
+                    courseListLayout.add(new Paragraph("Course data missing for ID: " + offering.getCourseId()));
+                }
             }
         }
+
+        // Populate Stats
+        statsContainer.setSpacing(true);
+        statsContainer.getStyle().set("flex-wrap", "wrap");
+
+        statsContainer.add(
+                new com.dm.view.components.StatsCard("Assignments", String.valueOf(courseCount), "class",
+                        LumoUtility.TextColor.PRIMARY),
+                new com.dm.view.components.StatsCard("Weekly Hours", String.valueOf(totalHours), "schedule",
+                        LumoUtility.TextColor.WARNING),
+                new com.dm.view.components.StatsCard("Total Credits", String.valueOf(totalCredits), "school",
+                        LumoUtility.TextColor.SUCCESS));
     }
 
-    private HorizontalLayout createCourseCard(CourseDto course) {
+    private HorizontalLayout createCourseCard(com.dm.dto.CourseOfferingDto offering, com.dm.dto.CourseDto course) {
         HorizontalLayout card = new HorizontalLayout();
         card.addClassNames(
                 LumoUtility.Background.CONTRAST_5,
@@ -165,13 +184,19 @@ public class TeacherDashboardView extends VerticalLayout {
         details.setPadding(false);
         details.setSpacing(false);
 
-        Span courseTitle = new Span(course.getCode() + " - " + course.getTitle());
+        // Title: Code - Title (Group)
+        String titleText = course.getCode() + " - " + course.getTitle();
+        if (offering.getGroupCode() != null) {
+            titleText += " (" + offering.getGroupCode() + ")";
+        }
+
+        Span courseTitle = new Span(titleText);
         courseTitle.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
 
         Span courseDetails = new Span(
                 course.getCredits() + " cr • " +
-                        course.getSemester() + " sem • " +
-                        (course.getParity() != null ? course.getParity() : "N/A"));
+                        offering.getWeeklyHours() + " hrs/week • " +
+                        (offering.getParity() != null ? offering.getParity() : "All Weeks"));
         courseDetails.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL);
 
         details.add(courseTitle, courseDetails);

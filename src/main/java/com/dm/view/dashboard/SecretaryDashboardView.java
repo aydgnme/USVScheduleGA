@@ -16,91 +16,116 @@ import jakarta.annotation.security.RolesAllowed;
 @RolesAllowed("SECRETARY")
 public class SecretaryDashboardView extends VerticalLayout {
 
-    private final com.dm.service.TimeslotService timeslotService;
-    private final com.dm.service.CourseService courseService;
-    private final com.dm.service.RoomService roomService;
+        private final com.dm.service.TimeslotService timeslotService;
+        private final com.dm.service.CourseService courseService;
+        private final com.dm.service.RoomService roomService;
+        private final com.dm.service.CourseOfferingService courseOfferingService;
+        private final com.dm.service.TeacherService teacherService;
+        private final com.dm.service.GroupService groupService;
 
-    public SecretaryDashboardView(com.dm.service.TimeslotService timeslotService,
-            com.dm.service.CourseService courseService,
-            com.dm.service.RoomService roomService) {
-        this.timeslotService = timeslotService;
-        this.courseService = courseService;
-        this.roomService = roomService;
+        public SecretaryDashboardView(com.dm.service.TimeslotService timeslotService,
+                        com.dm.service.CourseService courseService,
+                        com.dm.service.RoomService roomService,
+                        com.dm.service.CourseOfferingService courseOfferingService,
+                        com.dm.service.TeacherService teacherService,
+                        com.dm.service.GroupService groupService) {
+                this.timeslotService = timeslotService;
+                this.courseService = courseService;
+                this.roomService = roomService;
+                this.courseOfferingService = courseOfferingService;
+                this.teacherService = teacherService;
+                this.groupService = groupService;
 
-        addClassName("secretary-dashboard-view");
-        setSizeFull();
-        setPadding(true);
+                addClassName("secretary-dashboard-view");
+                setSizeFull();
+                setPadding(true);
 
-        // Header
-        HorizontalLayout header = new HorizontalLayout();
-        header.setAlignItems(Alignment.CENTER);
-        GoogleIcon dashIcon = new GoogleIcon("dashboard");
-        dashIcon.getStyle().set("font-size", "32px");
-        header.add(dashIcon);
+                // Header
+                HorizontalLayout header = new HorizontalLayout();
+                header.setAlignItems(Alignment.CENTER);
+                GoogleIcon dashIcon = new GoogleIcon("dashboard");
+                dashIcon.getStyle().set("font-size", "32px");
+                header.add(dashIcon);
 
-        // Stats
-        HorizontalLayout stats = createStatsRow();
+                // Stats
+                HorizontalLayout stats = createStatsRow();
 
-        // Navigation cards
-        HorizontalLayout navigationCards = createNavigationCards();
+                // Navigation cards
+                com.vaadin.flow.component.Component navigationCards = createNavigationCards();
 
-        add(header, stats, navigationCards);
-    }
+                add(header, stats, navigationCards);
+        }
 
-    private HorizontalLayout createStatsRow() {
-        HorizontalLayout stats = new HorizontalLayout();
-        stats.setWidthFull();
-        stats.setJustifyContentMode(JustifyContentMode.CENTER);
-        stats.setSpacing(true);
-        stats.getStyle().set("flex-wrap", "wrap");
+        private HorizontalLayout createStatsRow() {
+                HorizontalLayout stats = new HorizontalLayout();
+                stats.setWidthFull();
+                stats.setJustifyContentMode(JustifyContentMode.CENTER);
+                stats.setSpacing(true);
+                stats.getStyle().set("flex-wrap", "wrap");
 
-        stats.add(
-                new com.dm.view.components.StatsCard("Timeslots", String.valueOf(timeslotService.count()), "schedule",
-                        LumoUtility.TextColor.PRIMARY),
-                new com.dm.view.components.StatsCard("Courses", String.valueOf(courseService.count()), "menu_book",
-                        LumoUtility.TextColor.WARNING),
-                new com.dm.view.components.StatsCard("Rooms", String.valueOf(roomService.count()), "meeting_room",
-                        LumoUtility.TextColor.SUCCESS));
-        return stats;
-    }
+                // Assignments Status
+                stats.add(new com.dm.view.components.StatsCard("Assignments",
+                                String.valueOf(courseOfferingService.count()),
+                                "playlist_add_check", LumoUtility.TextColor.PRIMARY));
 
-    private HorizontalLayout createNavigationCards() {
-        HorizontalLayout cards = new HorizontalLayout();
-        cards.setWidthFull();
-        cards.setSpacing(true);
-        cards.setJustifyContentMode(JustifyContentMode.CENTER);
+                // Resources
+                stats.add(new com.dm.view.components.StatsCard("Courses", String.valueOf(courseService.count()),
+                                "menu_book",
+                                LumoUtility.TextColor.SECONDARY));
+                stats.add(new com.dm.view.components.StatsCard("Teachers", String.valueOf(teacherService.count()),
+                                "school",
+                                LumoUtility.TextColor.SECONDARY));
+                stats.add(new com.dm.view.components.StatsCard("Groups", String.valueOf(groupService.count()), "groups",
+                                LumoUtility.TextColor.SECONDARY));
+                stats.add(new com.dm.view.components.StatsCard("Rooms", String.valueOf(roomService.count()),
+                                "meeting_room",
+                                LumoUtility.TextColor.SUCCESS));
 
-        cards.add(
-                createIconNavigationCard("schedule", "timeslots", "Manage Timeslots"),
-                createIconNavigationCard("menu_book", "courses", "Manage Courses"),
-                createIconNavigationCard("meeting_room", "rooms", "Manage Rooms"));
+                return stats;
+        }
 
-        cards.getStyle().set("flex-wrap", "wrap");
+        private com.vaadin.flow.component.Component createNavigationCards() {
+                HorizontalLayout cards = new HorizontalLayout();
+                cards.setWidthFull();
+                cards.setSpacing(true);
+                cards.setJustifyContentMode(JustifyContentMode.CENTER);
 
-        return cards;
-    }
+                cards.add(
+                                createIconNavigationCard("playlist_add_check", "secretary/assignments",
+                                                "Course Assignments"),
+                                createIconNavigationCard("calendar_view_week", "secretary/schedule", "Schedule Editor"),
+                                createIconNavigationCard("schedule", "admin/timeslots", "View Timeslots") // Direct
+                                                                                                          // access to
+                                                                                                          // timeslots
+                                                                                                          // is useful
+                );
 
-    private VerticalLayout createIconNavigationCard(String iconName, String route, String tooltip) {
-        VerticalLayout card = new VerticalLayout();
-        card.addClassNames(
-                LumoUtility.Background.CONTRAST_5,
-                LumoUtility.BorderRadius.MEDIUM,
-                "card-hover");
-        card.setWidth("150px");
-        card.setHeight("150px");
-        card.setAlignItems(Alignment.CENTER);
-        card.setJustifyContentMode(JustifyContentMode.CENTER);
+                cards.getStyle().set("flex-wrap", "wrap");
 
-        GoogleIcon cardIcon = new GoogleIcon(iconName);
-        cardIcon.getStyle().set("font-size", "64px");
-        cardIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
+                return cards;
+        }
 
-        card.getElement().setAttribute("title", tooltip);
-        card.add(cardIcon);
+        private VerticalLayout createIconNavigationCard(String iconName, String route, String tooltip) {
+                VerticalLayout card = new VerticalLayout();
+                card.addClassNames(
+                                LumoUtility.Background.CONTRAST_5,
+                                LumoUtility.BorderRadius.MEDIUM,
+                                "card-hover");
+                card.setWidth("150px");
+                card.setHeight("150px");
+                card.setAlignItems(Alignment.CENTER);
+                card.setJustifyContentMode(JustifyContentMode.CENTER);
 
-        card.getStyle().set("cursor", "pointer");
-        card.addClickListener(e -> card.getUI().ifPresent(ui -> ui.navigate(route)));
+                GoogleIcon cardIcon = new GoogleIcon(iconName);
+                cardIcon.getStyle().set("font-size", "64px");
+                cardIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
 
-        return card;
-    }
+                card.getElement().setAttribute("title", tooltip);
+                card.add(cardIcon);
+
+                card.getStyle().set("cursor", "pointer");
+                card.addClickListener(e -> card.getUI().ifPresent(ui -> ui.navigate(route)));
+
+                return card;
+        }
 }

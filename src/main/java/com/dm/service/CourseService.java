@@ -48,6 +48,10 @@ public class CourseService {
         return getAll();
     }
 
+    public java.util.Optional<CourseDto> findById(Long id) {
+        return repository.findById(id).map(mapper::toDto);
+    }
+
     public CourseDto findByCode(String code) {
         return repository.findByCode(code)
                 .map(mapper::toDto)
