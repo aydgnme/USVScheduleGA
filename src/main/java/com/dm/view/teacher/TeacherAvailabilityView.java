@@ -1,234 +1,238 @@
 package com.dm.view.teacher;
 
-import com.dm.data.entity.TeacherPreferenceEntity;
-import com.dm.dto.TeacherDto;
-import com.dm.service.TeacherPreferenceService;
-import com.dm.service.TeacherService;
+import com.dm.dto.TeacherPreferenceDto;
+import com.dm.data.entity.UserEntity;
+import com.dm.data.repository.UserRepository;
+import com.dm.model.types.PreferenceType;
+import com.dm.service.TeacherAvailabilityService;
+import com.dm.view.components.AppCard;
+import com.dm.view.components.PageHeader;
 import com.dm.view.layout.MainLayout;
-import com.dm.view.teacher.components.AvailabilityForm;
-import com.dm.view.teacher.components.TeacherPreferenceForm;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.security.core.Authentication;
-import com.dm.view.components.GoogleIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.theme.lumo.LumoUtility;
-
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.time.DayOfWeek;
+import java.util.*;
 
-import java.time.format.TextStyle;
-import java.util.Locale;
-
-/**
- * View for teachers to manage their availability preferences.
- */
 @Route(value = "teacher/availability", layout = MainLayout.class)
-@PageTitle("My Availability | USV Schedule GA")
-@RolesAllowed("TEACHER")
+@PageTitle("My Availability | USV Schedule")
+@RolesAllowed("ROLE_TEACHER")
 public class TeacherAvailabilityView extends VerticalLayout {
 
-    private final TeacherService teacherService;
-    private final TeacherPreferenceService preferenceService;
-    private final AvailabilityForm availabilityForm;
-    private final TeacherPreferenceForm preferenceForm;
-    private final Grid<TeacherPreferenceEntity> preferenceGrid;
-    private TeacherDto currentTeacher;
+    private final TeacherAvailabilityService service;
+    private final UserRepository userRepository;
 
-    public TeacherAvailabilityView(TeacherService teacherService,
-            TeacherPreferenceService preferenceService,
-            com.dm.service.CourseService courseService,
-            com.dm.service.GroupService groupService) {
-        this.teacherService = teacherService;
-        this.preferenceService = preferenceService;
-        this.availabilityForm = new AvailabilityForm();
-        this.preferenceForm = new TeacherPreferenceForm(courseService, groupService);
-        this.preferenceGrid = new Grid<>(TeacherPreferenceEntity.class);
+    // Grid state: Key = "MONDAY-8", Value = DTO
+    private Map<String, TeacherPreferenceDto> preferenceMap = new HashMap<>();
+    private Long currentTeacherId;
+
+    public TeacherAvailabilityView(TeacherAvailabilityService service, UserRepository userRepository) {
+        this.service = service;
+        this.userRepository = userRepository;
 
         addClassName("teacher-availability-view");
-        setSizeFull();
-        setPadding(true);
+        setHeightFull();
+        setSpacing(false);
 
-        HorizontalLayout headerLayout = new HorizontalLayout();
-        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        add(new PageHeader("My Availability", "Define your preferred and unavailable timeslots"));
 
-        GoogleIcon headerIcon = new GoogleIcon("event_available");
-        headerIcon.addClassNames(LumoUtility.TextColor.PRIMARY);
-        headerIcon.getStyle().set("font-size", "2.5rem"); // Match H1 size roughly
-
-        H1 header = new H1("My Availability");
-        header.addClassNames(LumoUtility.Margin.NONE);
-
-        headerLayout.add(headerIcon, header);
-
-        Paragraph description = new Paragraph(
-                "Configure your teaching availability preferences. " +
-                        "This information helps the scheduler optimize course assignments.");
-        description.addClassName(LumoUtility.TextColor.SECONDARY);
-
-        // Card Wrapper
-        VerticalLayout card = new VerticalLayout();
-        card.addClassNames("card"); // Uses the .card style from CSS
-        card.setPadding(true);
-        card.setSpacing(true);
-        card.setMaxWidth("800px"); // Limit width for better readability on large screens
-
-        card.add(description, availabilityForm);
-
-        // --- NEW PREFERENCE SECTION ---
-        H2 prefHeader = new H2("Specific Schedule Preferences");
-        prefHeader.addClassNames(LumoUtility.Margin.Top.LARGE);
-
-        Paragraph prefDescription = new Paragraph(
-                "Add specific constraints (e.g., 'I want to teach Course X on Tuesday').");
-        prefDescription.addClassName(LumoUtility.TextColor.SECONDARY);
-
-        configurePreferenceGrid();
-
-        preferenceForm.addSaveListener(this::savePreference);
-        preferenceForm.addCloseListener(e -> preferenceForm.setVisible(true)); // Just clear/reset
-
-        card.add(prefHeader, prefDescription, preferenceForm, preferenceGrid);
-
-        add(headerLayout, card);
-
-        // Setup button listeners
-        availabilityForm.getSaveButton().addClickListener(e -> saveAvailability());
-        availabilityForm.getCancelButton().addClickListener(e -> loadAvailability());
-
-        loadAvailability();
+        determineCurrentTeacher();
+        createGrid();
     }
 
-    private void loadAvailability() {
-        String teacherEmail = getCurrentUserEmail();
+    private void determineCurrentTeacher() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = "";
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else {
+            email = principal.toString();
+        }
 
-        if (teacherEmail == null) {
-            Notification.show("Session expired. Please login again.", 3000, Notification.Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            getUI().ifPresent(ui -> ui.navigate("login"));
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        if (user != null && user.getTeacherProfile() != null) {
+            this.currentTeacherId = user.getTeacherProfile().getId();
+        } else {
+            Notification.show("Error: Teacher profile not found for user " + email);
+        }
+    }
+
+    private void createGrid() {
+        if (currentTeacherId == null)
             return;
+
+        // Load existing
+        List<TeacherPreferenceDto> existing = service.getPreferences(currentTeacherId);
+        for (TeacherPreferenceDto dto : existing) {
+            // For this MVP, we treat startHour as the block index.
+            String key = dto.getDayOfWeek() + "-" + dto.getStartHour();
+            preferenceMap.put(key, dto);
         }
 
-        currentTeacher = teacherService.findByEmail(teacherEmail);
+        AppCard card = new AppCard();
+        card.setHeightFull();
+        card.add(createLegend());
+        card.add(buildTimeGrid());
+        card.add(createActions());
 
-        if (currentTeacher == null) {
-            Notification.show("Teacher profile not found. Please contact administration.",
-                    3000, Notification.Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
-
-        availabilityForm.setTeacher(currentTeacher);
-        updatePreferenceList();
+        add(card);
     }
 
-    private void configurePreferenceGrid() {
-        preferenceGrid.addClassName("preference-grid");
-        preferenceGrid.setHeight("300px");
-        preferenceGrid.removeAllColumns();
-
-        preferenceGrid.addColumn(p -> p.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH))
-                .setHeader("Day");
-
-        preferenceGrid.addColumn(
-                p -> p.getCourse() != null ? p.getCourse().getCode() + " - " + p.getCourse().getTitle() : "All Courses")
-                .setHeader("Course");
-
-        preferenceGrid.addColumn(p -> p.getGroup() != null ? p.getGroup().getCode() : "All Groups")
-                .setHeader("Group");
-
-        preferenceGrid.addColumn(p -> p.getStudyYear() != null ? "Year " + p.getStudyYear() : "All Years")
-                .setHeader("Study Year");
-
-        preferenceGrid.addComponentColumn(p -> {
-            com.vaadin.flow.component.button.Button deleteBtn = new com.vaadin.flow.component.button.Button(
-                    new GoogleIcon("delete"));
-            deleteBtn.addThemeVariants(com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR,
-                    com.vaadin.flow.component.button.ButtonVariant.LUMO_ICON,
-                    com.vaadin.flow.component.button.ButtonVariant.LUMO_SMALL);
-            deleteBtn.addClickListener(e -> {
-                preferenceService.delete(p.getId());
-                updatePreferenceList();
-            });
-            return deleteBtn;
-        });
+    private HorizontalLayout createLegend() {
+        HorizontalLayout l = new HorizontalLayout();
+        l.setSpacing(true);
+        l.add(createBadge(PreferenceType.NEUTRAL, "Available (Default)"));
+        l.add(createBadge(PreferenceType.PREFERRED, "Preferred"));
+        l.add(createBadge(PreferenceType.UNAVAILABLE, "Unavailable"));
+        return l;
     }
 
-    private void updatePreferenceList() {
-        if (currentTeacher != null) {
-            preferenceGrid.setItems(preferenceService.getPreferencesByTeacherEmail(currentTeacher.getEmail()));
-        }
+    private Span createBadge(PreferenceType type, String label) {
+        Span s = new Span(label);
+        s.getElement().getThemeList().add("badge " + getBadgeTheme(type));
+        return s;
     }
 
-    private void savePreference(TeacherPreferenceForm.SaveEvent event) {
-        TeacherPreferenceEntity p = new TeacherPreferenceEntity();
-        p.setDayOfWeek(event.getDay());
-
-        // Map DTOs to partial entities just for ID reference or null
-        // Services will handle full hydration if needed, but for simple ID refs:
-        if (event.getCourse() != null) {
-            com.dm.data.entity.CourseEntity c = new com.dm.data.entity.CourseEntity();
-            c.setId(event.getCourse().getId());
-            p.setCourse(c);
-        }
-        if (event.getGroup() != null) {
-            com.dm.data.entity.GroupEntity g = new com.dm.data.entity.GroupEntity();
-            g.setId(event.getGroup().getId());
-            p.setGroup(g);
-        }
-        p.setStudyYear(event.getStudyYear());
-        p.setPriority(1); // Default priority for now
-
-        try {
-            preferenceService.save(p, getCurrentUserEmail());
-            updatePreferenceList();
-            Notification.show("Preference added", 3000, Notification.Position.BOTTOM_END)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        } catch (Exception e) {
-            Notification.show("Error adding preference: " + e.getMessage(), 5000, Notification.Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
+    private String getBadgeTheme(PreferenceType type) {
+        if (type == PreferenceType.UNAVAILABLE)
+            return "error";
+        if (type == PreferenceType.PREFERRED)
+            return "success";
+        return "contrast";
     }
 
-    private void saveAvailability() {
-        try {
-            TeacherDto updatedTeacher = availabilityForm.getUpdatedTeacher();
+    private Div buildTimeGrid() {
+        Div grid = new Div();
+        grid.getStyle().set("display", "grid");
+        grid.getStyle().set("grid-template-columns", "80px repeat(5, 1fr)"); // Time + 5 Days
+        grid.getStyle().set("gap", "4px");
+        grid.getStyle().set("overflow-y", "auto");
+        grid.setHeightFull();
 
-            if (updatedTeacher == null) {
-                Notification.show("No teacher data to save.", 3000, Notification.Position.MIDDLE)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-                return;
+        // Header Row
+        grid.add(new Div()); // Corner
+        for (DayOfWeek day : EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY)) {
+            Div header = new Div(new Span(day.name().substring(0, 3)));
+            header.getStyle().set("font-weight", "bold").set("text-align", "center");
+            grid.add(header);
+        }
+
+        // Rows 8 to 20
+        for (int hour = 8; hour < 20; hour++) {
+            // Time Label
+            Div timeLabel = new Div(new Span(String.format("%02d:00", hour)));
+            timeLabel.getStyle().set("text-align", "right").set("padding-right", "10px").set("color",
+                    "var(--lumo-secondary-text-color)");
+            grid.add(timeLabel);
+
+            // Cells
+            for (DayOfWeek day : EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY)) {
+                grid.add(createCell(day, hour));
             }
+        }
+        return grid;
+    }
 
-            teacherService.update(updatedTeacher.getId(), updatedTeacher);
-            currentTeacher = updatedTeacher;
+    private Div createCell(DayOfWeek day, int hour) {
+        String key = day + "-" + hour;
+        TeacherPreferenceDto dto = preferenceMap.getOrDefault(key, null);
+        PreferenceType currentType = (dto != null && dto.getType() != null) ? dto.getType() : PreferenceType.NEUTRAL;
 
-            Notification notification = Notification.show(
-                    "✅ Availability preferences saved successfully!",
-                    3000,
-                    Notification.Position.TOP_CENTER);
-            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        Div cell = new Div();
+        cell.getStyle().set("border", "1px solid var(--lumo-contrast-10pct)");
+        cell.getStyle().set("border-radius", "4px");
+        cell.getStyle().set("height", "40px");
+        cell.getStyle().set("cursor", "pointer");
+        cell.getStyle().set("display", "flex");
+        cell.getStyle().set("align-items", "center");
+        cell.getStyle().set("justify-content", "center");
 
-        } catch (Exception e) {
-            Notification.show("Error saving availability: " + e.getMessage(),
-                    5000, Notification.Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        applyStyle(cell, currentType);
+
+        cell.addClickListener(e -> {
+            PreferenceType next = getNext(getModelType(cell));
+            updateMap(key, day, hour, next);
+            applyStyle(cell, next);
+        });
+
+        return cell;
+    }
+
+    // Helper to get type from cell model (state management in UI)
+    private PreferenceType getModelType(Div cell) {
+        PreferenceType type = com.vaadin.flow.component.ComponentUtil.getData(cell, PreferenceType.class);
+        return type != null ? type : PreferenceType.NEUTRAL;
+    }
+
+    private void applyStyle(Div cell, PreferenceType type) {
+        cell.removeAll();
+        com.vaadin.flow.component.ComponentUtil.setData(cell, PreferenceType.class, type);
+
+        if (type == PreferenceType.UNAVAILABLE) {
+            cell.getStyle().set("background-color", "var(--lumo-error-color-10pct)");
+            cell.add(VaadinIcon.BAN.create());
+        } else if (type == PreferenceType.PREFERRED) {
+            cell.getStyle().set("background-color", "var(--lumo-success-color-10pct)");
+            cell.add(VaadinIcon.STAR.create());
+        } else {
+            cell.getStyle().set("background-color", "transparent");
         }
     }
 
-    private String getCurrentUserEmail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return authentication.getName();
+    private PreferenceType getNext(PreferenceType current) {
+        if (current == PreferenceType.NEUTRAL)
+            return PreferenceType.PREFERRED;
+        if (current == PreferenceType.PREFERRED)
+            return PreferenceType.UNAVAILABLE;
+        return PreferenceType.NEUTRAL;
+    }
+
+    private void updateMap(String key, DayOfWeek day, int hour, PreferenceType type) {
+        TeacherPreferenceDto dto = preferenceMap.get(key);
+        if (dto == null) {
+            dto = new TeacherPreferenceDto();
+            dto.setTeacherId(currentTeacherId);
+            dto.setDayOfWeek(day);
+            dto.setStartHour(hour);
+            dto.setEndHour(hour + 1);
         }
-        return null;
+        dto.setType(type);
+        preferenceMap.put(key, dto);
+    }
+
+    private HorizontalLayout createActions() {
+        Button save = new Button("Save Changes", e -> save());
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        return new HorizontalLayout(save);
+    }
+
+    private void save() {
+        try {
+            for (TeacherPreferenceDto dto : preferenceMap.values()) {
+                if (dto.getType() == PreferenceType.NEUTRAL) {
+                    if (dto.getId() != null) {
+                        service.deletePreference(dto.getId());
+                    }
+                } else {
+                    service.savePreference(dto);
+                }
+            }
+            Notification.show("Availability updated successfully")
+                    .addThemeVariants(com.vaadin.flow.component.notification.NotificationVariant.LUMO_SUCCESS);
+        } catch (Exception e) {
+            Notification.show("Error saving: " + e.getMessage())
+                    .addThemeVariants(com.vaadin.flow.component.notification.NotificationVariant.LUMO_ERROR);
+        }
     }
 }

@@ -2,16 +2,16 @@
 -- Adds 10 Professors, ~32 Courses (Romanian), and Allocations
 
 -- 1. Insert Users (Teachers)
-INSERT INTO users (email, password, role, enabled) VALUES ('ion.popescu@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('vasile.ionescu@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('maria.dumitrescu@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('elena.radu@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('gheorghe.stan@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('ana.stoica@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('constantin.gheorghiu@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('mihai.matei@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('florin.nistor@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
-INSERT INTO users (email, password, role, enabled) VALUES ('roxana.dobre@usv.ro', '$2a$10$eAccYoNOHEqXve8aIWT8Nu3rfMX5j01k0gPMkarma0CRZnP3eLMDm', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('ion.popescu@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('vasile.ionescu@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('maria.dumitrescu@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('elena.radu@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('gheorghe.stan@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('ana.stoica@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('constantin.gheorghiu@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('mihai.matei@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('florin.nistor@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
+INSERT INTO users (email, password, role, enabled) VALUES ('roxana.dobre@usv.ro', '$2a$10$o40p7mzIZxjzNXbsNJFzjeUMsqPxAv5EZzzmaPwYz/LJ8/JJQ.JBy', 'TEACHER', 1);
 
 -- 2. Insert Teacher Profiles
 INSERT INTO teacher_profiles (user_id, first_name, last_name, max_hours_weekly, available_days_json) VALUES ((SELECT id FROM users WHERE email='ion.popescu@usv.ro'), 'Ion', 'Popescu', 20, '[{"day":"MONDAY","weight":10}]');

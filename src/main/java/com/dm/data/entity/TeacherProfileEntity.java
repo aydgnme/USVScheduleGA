@@ -65,4 +65,84 @@ public class TeacherProfileEntity {
 
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public java.util.Set<DepartmentEntity> getDepartments() {
+        return departments;
+    }
+
+    public void setDepartments(java.util.Set<DepartmentEntity> departments) {
+        this.departments = departments;
+    }
+
+    public Integer getMaxHoursWeekly() {
+        return maxHoursWeekly;
+    }
+
+    public void setMaxHoursWeekly(Integer maxHoursWeekly) {
+        this.maxHoursWeekly = maxHoursWeekly;
+    }
+
+    public String getAvailableDaysJson() {
+        return availableDaysJson;
+    }
+
+    public void setAvailableDaysJson(String availableDaysJson) {
+        this.availableDaysJson = availableDaysJson;
+    }
+
+    public String getPreferredTime() {
+        return preferredTime;
+    }
+
+    public void setPreferredTime(String preferredTime) {
+        this.preferredTime = preferredTime;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

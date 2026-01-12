@@ -14,10 +14,76 @@ import lombok.NoArgsConstructor;
         @Index(name = "ix_se_room", columnList = "room_id"),
         @Index(name = "ix_se_status", columnList = "status")
 })
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ScheduleEntryEntity {
+    public ScheduleEntryEntity() {
+    }
+
+    public ScheduleEntryEntity(Long id, CourseOfferingEntity offering, TimeslotEntity timeslot, RoomEntity room,
+            WeekParity weekPattern, ScheduleStatus status, java.time.LocalDateTime createdAt) {
+        this.id = id;
+        this.offering = offering;
+        this.timeslot = timeslot;
+        this.room = room;
+        this.weekPattern = weekPattern;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setOffering(CourseOfferingEntity offering) {
+        this.offering = offering;
+    }
+
+    public CourseOfferingEntity getOffering() {
+        return offering;
+    }
+
+    public void setTimeslot(TimeslotEntity timeslot) {
+        this.timeslot = timeslot;
+    }
+
+    public TimeslotEntity getTimeslot() {
+        return timeslot;
+    }
+
+    public void setRoom(RoomEntity room) {
+        this.room = room;
+    }
+
+    public RoomEntity getRoom() {
+        return room;
+    }
+
+    public void setWeekPattern(WeekParity weekPattern) {
+        this.weekPattern = weekPattern;
+    }
+
+    public WeekParity getWeekPattern() {
+        return weekPattern;
+    }
+
+    public void setStatus(ScheduleStatus status) {
+        this.status = status;
+    }
+
+    public ScheduleStatus getStatus() {
+        return status;
+    }
+
+    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

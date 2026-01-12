@@ -1,11 +1,6 @@
 package com.dm.data.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import java.time.DayOfWeek;
 
 /**
@@ -15,29 +10,51 @@ import java.time.DayOfWeek;
  */
 @Entity
 @Table(name = "teacher_preferences")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TeacherPreferenceEntity {
+
+    public TeacherPreferenceEntity() {
+    }
+
+    public TeacherPreferenceEntity(Long id, TeacherProfileEntity teacher, CourseEntity course, GroupEntity group,
+            Integer studyYear, DayOfWeek dayOfWeek, Integer priority, Integer startHour, Integer endHour,
+            com.dm.model.types.PreferenceType type) {
+        this.id = id;
+        this.teacher = teacher;
+        this.course = course;
+        this.group = group;
+        this.studyYear = studyYear;
+        this.dayOfWeek = dayOfWeek;
+        this.priority = priority;
+        this.startHour = startHour;
+        this.endHour = endHour;
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "TeacherPreferenceEntity{" +
+                "id=" + id +
+                ", studyYear=" + studyYear +
+                ", dayOfWeek=" + dayOfWeek +
+                ", priority=" + priority +
+                ", startHour=" + startHour +
+                ", endHour=" + endHour +
+                ", type=" + type +
+                '}';
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)
     private TeacherProfileEntity teacher;
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private CourseEntity course; // Nullable if preference applies to any course
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private GroupEntity group; // Nullable if preference applies to any group
@@ -51,4 +68,94 @@ public class TeacherPreferenceEntity {
 
     @Column(name = "priority")
     private Integer priority; // Higher number = higher priority (e.g., 10=Mandatory, 1=Preferred)
+
+    @Column(name = "start_hour")
+    private Integer startHour;
+
+    @Column(name = "end_hour")
+    private Integer endHour;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preference_type", length = 20)
+    private com.dm.model.types.PreferenceType type;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public TeacherProfileEntity getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(TeacherProfileEntity teacher) {
+        this.teacher = teacher;
+    }
+
+    public CourseEntity getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseEntity course) {
+        this.course = course;
+    }
+
+    public GroupEntity getGroup() {
+        return group;
+    }
+
+    public void setGroup(GroupEntity group) {
+        this.group = group;
+    }
+
+    public Integer getStudyYear() {
+        return studyYear;
+    }
+
+    public void setStudyYear(Integer studyYear) {
+        this.studyYear = studyYear;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public Integer getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(Integer startHour) {
+        this.startHour = startHour;
+    }
+
+    public Integer getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(Integer endHour) {
+        this.endHour = endHour;
+    }
+
+    public com.dm.model.types.PreferenceType getType() {
+        return type;
+    }
+
+    public void setType(com.dm.model.types.PreferenceType type) {
+        this.type = type;
+    }
 }

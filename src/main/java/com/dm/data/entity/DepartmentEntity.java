@@ -46,4 +46,52 @@ public class DepartmentEntity {
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "departments", fetch = FetchType.LAZY)
     private java.util.Set<TeacherProfileEntity> teachers = new java.util.HashSet<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public FacultyEntity getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(FacultyEntity faculty) {
+        this.faculty = faculty;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public java.util.Set<SpecializationEntity> getSpecializations() {
+        return specializations;
+    }
+
+    public void setSpecializations(java.util.Set<SpecializationEntity> specializations) {
+        this.specializations = specializations;
+    }
+
+    public java.util.Set<TeacherProfileEntity> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(java.util.Set<TeacherProfileEntity> teachers) {
+        this.teachers = teachers;
+    }
 }

@@ -42,4 +42,52 @@ public class SpecializationEntity {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "specialization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private java.util.Set<GroupEntity> groups = new java.util.HashSet<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public DepartmentEntity getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(DepartmentEntity department) {
+        this.department = department;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getStudyCycle() {
+        return studyCycle;
+    }
+
+    public void setStudyCycle(String studyCycle) {
+        this.studyCycle = studyCycle;
+    }
+
+    public java.util.Set<GroupEntity> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(java.util.Set<GroupEntity> groups) {
+        this.groups = groups;
+    }
 }

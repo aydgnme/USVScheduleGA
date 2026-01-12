@@ -21,6 +21,15 @@ public class PageHeader extends VerticalLayout {
     private final HorizontalLayout topRow;
     private final HorizontalLayout actions;
 
+    public PageHeader(String titleText, String subtitleText, Component... actionComponents) {
+        this(titleText, actionComponents);
+        if (subtitleText != null && !subtitleText.isEmpty()) {
+            com.vaadin.flow.component.html.Span subtitle = new com.vaadin.flow.component.html.Span(subtitleText);
+            subtitle.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+            addComponentAtIndex(1, subtitle);
+        }
+    }
+
     public PageHeader(String titleText, Component... actionComponents) {
         addClassName(LumoUtility.Padding.Bottom.MEDIUM);
         setSpacing(false);

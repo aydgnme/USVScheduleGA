@@ -43,4 +43,60 @@ public class CourseOfferingEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_type", length = 20)
     private com.dm.model.types.ActivityType type;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public CourseEntity getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseEntity course) {
+        this.course = course;
+    }
+
+    public GroupEntity getGroup() {
+        return group;
+    }
+
+    public void setGroup(GroupEntity group) {
+        this.group = group;
+    }
+
+    public TeacherProfileEntity getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(TeacherProfileEntity teacher) {
+        this.teacher = teacher;
+    }
+
+    public Integer getWeeklyHours() {
+        return weeklyHours;
+    }
+
+    public void setWeeklyHours(Integer weeklyHours) {
+        this.weeklyHours = weeklyHours;
+    }
+
+    public WeekParity getParity() {
+        return parity;
+    }
+
+    public void setParity(WeekParity parity) {
+        this.parity = parity;
+    }
+
+    public com.dm.model.types.ActivityType getType() {
+        return type;
+    }
+
+    public void setType(com.dm.model.types.ActivityType type) {
+        this.type = type;
+    }
 }
