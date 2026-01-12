@@ -4,6 +4,7 @@ import com.dm.data.repository.ScheduleEntryRepository;
 import com.dm.dto.ScheduleEntryDto;
 import com.dm.mapper.ScheduleEntryMapper;
 import com.dm.model.types.ScheduleStatus;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
  * Service for managing scheduled entries (course assignments to timeslots and
  * rooms).
  */
+@Transactional
 @Service
 public class ScheduleService {
 
