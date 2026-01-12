@@ -9,6 +9,7 @@ import com.dm.service.CourseOfferingService;
 import com.dm.service.CourseService;
 import com.dm.service.GroupService;
 import com.dm.service.TeacherService;
+import com.dm.service.SecretaryService;
 import com.dm.view.components.AppCard;
 import com.dm.view.components.PageHeader;
 import com.dm.view.components.SearchToolbar;
@@ -31,7 +32,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -44,6 +44,11 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
     private final CourseService courseService;
     private final GroupService groupService;
     private final TeacherService teacherService;
+    private final SecretaryService secretaryService;
+
+    private Long currentDepartmentId;
+    private Long currentFacultyId;
+    private boolean isSecretary;
 
     private Grid<CourseOfferingDto> grid;
     private ComboBox<GroupDto> groupFilter;
@@ -71,11 +76,15 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
             CourseOfferingService offeringService,
             CourseService courseService,
             GroupService groupService,
-            TeacherService teacherService) {
+            TeacherService teacherService,
+            SecretaryService secretaryService) {
         this.offeringService = offeringService;
         this.courseService = courseService;
         this.groupService = groupService;
         this.teacherService = teacherService;
+        this.secretaryService = secretaryService;
+
+        checkRoleAndSetDepartment();
 
         addClassName("secretary-assignments-view");
         setSpacing(false);
@@ -94,8 +103,19 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
 
         add(header, splitLayout);
 
-        refreshGrid(); // Initially load all or empty? Load all for now or filtered if needed.
+        refreshGrid();
         clearForm();
+    }
+
+    private void checkRoleAndSetDepartment() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_SECRETARY"))) {
+            this.isSecretary = true;
+            secretaryService.findByUserEmail(auth.getName()).ifPresent(p -> {
+                this.currentDepartmentId = p.getDepartment().getId();
+                this.currentFacultyId = p.getDepartment().getFaculty().getId();
+            });
+        }
     }
 
     private void loadCaches() {
@@ -115,7 +135,13 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
         card.setHeightFull();
 
         groupFilter = new ComboBox<>("Filter by Group");
-        groupFilter.setItems(groupService.getAll());
+        if (currentDepartmentId != null) {
+            groupFilter.setItems(groupService.findByDepartmentId(currentDepartmentId));
+        } else if (isSecretary) {
+            groupFilter.setItems(java.util.Collections.emptyList());
+        } else {
+            groupFilter.setItems(groupService.getAll());
+        }
         groupFilter.setItemLabelGenerator(GroupDto::getCode);
         groupFilter.addValueChangeListener(e -> refreshGrid());
         groupFilter.setClearButtonVisible(true);
@@ -159,15 +185,33 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
 
         group = new ComboBox<>("Group");
-        group.setItems(groupService.getAll());
+        if (currentDepartmentId != null) {
+            group.setItems(groupService.findByDepartmentId(currentDepartmentId));
+        } else if (isSecretary) {
+            group.setItems(java.util.Collections.emptyList());
+        } else {
+            group.setItems(groupService.getAll());
+        }
         group.setItemLabelGenerator(GroupDto::getCode);
 
         course = new ComboBox<>("Course");
-        course.setItems(courseService.findAll());
+        if (currentFacultyId != null) {
+            course.setItems(courseService.findByFacultyId(currentFacultyId));
+        } else if (isSecretary) {
+            course.setItems(java.util.Collections.emptyList());
+        } else {
+            course.setItems(courseService.findAll());
+        }
         course.setItemLabelGenerator(c -> c.getCode() + " - " + c.getTitle());
 
         teacher = new ComboBox<>("Teacher");
-        teacher.setItems(teacherService.getAll());
+        if (currentDepartmentId != null) {
+            teacher.setItems(teacherService.findByDepartmentId(currentDepartmentId));
+        } else if (isSecretary) {
+            teacher.setItems(java.util.Collections.emptyList());
+        } else {
+            teacher.setItems(teacherService.getAll());
+        }
         teacher.setItemLabelGenerator(t -> t.getLastName() + " " + t.getFirstName());
 
         weeklyHours = new IntegerField("Weekly Hours");
@@ -238,7 +282,13 @@ public class SecretaryCourseAssignmentView extends VerticalLayout {
         if (groupFilter.getValue() != null) {
             grid.setItems(offeringService.getByGroupId(groupFilter.getValue().getId()));
         } else {
-            grid.setItems(offeringService.getAll());
+            if (currentDepartmentId != null) {
+                grid.setItems(offeringService.getByDepartmentId(currentDepartmentId));
+            } else if (isSecretary) {
+                grid.setItems(java.util.Collections.emptyList());
+            } else {
+                grid.setItems(offeringService.getAll());
+            }
         }
         // Refresh caches potentially if needed
     }

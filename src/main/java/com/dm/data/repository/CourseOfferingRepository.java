@@ -12,19 +12,21 @@ import java.util.List;
 @Repository
 public interface CourseOfferingRepository extends JpaRepository<CourseOfferingEntity, Long> {
 
-    List<CourseOfferingEntity> findAllByCourseId(Long courseId);
+        List<CourseOfferingEntity> findAllByCourseId(Long courseId);
 
-    List<CourseOfferingEntity> findAllByGroupId(Long groupId);
+        List<CourseOfferingEntity> findAllByGroupId(Long groupId);
 
-    List<CourseOfferingEntity> findAllByTeacherId(Long teacherId);
+        List<CourseOfferingEntity> findAllByTeacherId(Long teacherId);
 
-    @org.springframework.data.jpa.repository.Query("SELECT co FROM CourseOfferingEntity co JOIN FETCH co.course WHERE co.teacher.user.email = :email")
-    List<CourseOfferingEntity> findAllByTeacher_User_Email(
-            @org.springframework.data.repository.query.Param("email") String email);
+        List<CourseOfferingEntity> findAllByCourse_Department_Id(Long departmentId);
 
-    @org.springframework.data.jpa.repository.Query("SELECT co FROM CourseOfferingEntity co " +
-            "JOIN FETCH co.course " +
-            "JOIN FETCH co.group " +
-            "JOIN FETCH co.teacher")
-    List<CourseOfferingEntity> findAllWithDetails();
+        @org.springframework.data.jpa.repository.Query("SELECT co FROM CourseOfferingEntity co JOIN FETCH co.course WHERE co.teacher.user.email = :email")
+        List<CourseOfferingEntity> findAllByTeacher_User_Email(
+                        @org.springframework.data.repository.query.Param("email") String email);
+
+        @org.springframework.data.jpa.repository.Query("SELECT co FROM CourseOfferingEntity co " +
+                        "JOIN FETCH co.course " +
+                        "JOIN FETCH co.group " +
+                        "JOIN FETCH co.teacher")
+        List<CourseOfferingEntity> findAllWithDetails();
 }

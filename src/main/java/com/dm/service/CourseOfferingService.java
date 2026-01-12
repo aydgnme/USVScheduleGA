@@ -63,6 +63,12 @@ public class CourseOfferingService {
                 .collect(Collectors.toList());
     }
 
+    public List<CourseOfferingDto> getByDepartmentId(Long departmentId) {
+        return repository.findAllByCourse_Department_Id(departmentId).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public CourseOfferingDto save(CourseOfferingDto dto) {
         CourseOfferingEntity entity;
         if (dto.getId() != null) {

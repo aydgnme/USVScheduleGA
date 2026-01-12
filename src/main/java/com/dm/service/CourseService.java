@@ -39,6 +39,12 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
+    public List<CourseDto> findByFacultyId(Long facultyId) {
+        return repository.findByDepartment_Faculty_Id(facultyId).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public List<CourseDto> getAll() {
         return repository.findAll().stream()
                 .map(mapper::toDto)

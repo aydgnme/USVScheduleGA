@@ -19,5 +19,6 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
     java.util.List<GroupEntity> findByStudyYear(Integer studyYear);
 
     java.util.List<GroupEntity> findByIsModular(Integer isModular);
-}
 
+    java.util.List<GroupEntity> findBySpecialization_Department_Id(Long departmentId);
+}

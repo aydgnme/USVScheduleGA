@@ -54,6 +54,12 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    public List<GroupDto> findByDepartmentId(Long departmentId) {
+        return repository.findBySpecialization_Department_Id(departmentId).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     @org.springframework.transaction.annotation.Transactional
     public GroupDto save(GroupDto dto) {
         GroupEntity entity = mapper.toEntity(dto);

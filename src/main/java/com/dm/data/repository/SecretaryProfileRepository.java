@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface SecretaryProfileRepository extends JpaRepository<SecretaryProfileEntity, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = "department")
     Optional<SecretaryProfileEntity> findByUser_Email(String email);
 }
