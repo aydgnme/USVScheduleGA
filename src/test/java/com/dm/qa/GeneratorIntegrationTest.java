@@ -146,22 +146,24 @@ public class GeneratorIntegrationTest {
 
         assertNotNull(savedOffering.getId());
 
-        // 5. Run Generation
-        // Set small pop/gen for speed
+// 5. Run Generation
+// Set small pop/gen for speed
         gaService.setPopulationSize(10);
         gaService.setMutationRate(0.1);
         gaService.setElitismCount(1);
 
-        Chromosome best = gaService.runFullGeneration(5); // 5 generations
+// CHANGE THIS LINE: Change type to GenerationResult (or use var)
+        var result = gaService.runFullGeneration(5, java.util.List.of(group.getId()));
 
-        assertNotNull(best);
-        assertTrue(best.getGenes().size() > 0, "Best chromosome should have genes");
+        assertNotNull(result);
+// CHANGE THIS LINE: Use result.entries() instead of best.getGenes()
+        assertTrue(result.entries().size() > 0, "Generated schedule should have entries");
 
-        // 6. Verify Persistence
+// 6. Verify Persistence
         var scheduledEntries = scheduleService.getAll();
         assertFalse(scheduledEntries.isEmpty(), "Schedule should be saved to DB");
 
-        // Find our specific entry
+// Find our specific entry
         boolean found = scheduledEntries.stream()
                 .anyMatch(e -> e.getOfferingId().equals(savedOffering.getId()));
         assertTrue(found, "Our offering should be scheduled");

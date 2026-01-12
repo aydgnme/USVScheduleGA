@@ -16,6 +16,7 @@ import java.time.LocalTime;
 public class ScheduleEntryDto implements Serializable {
     public ScheduleEntryDto() {
     }
+    private boolean conflicted;
 
     public ScheduleEntryDto(Long id, Long offeringId, Long timeslotId, Long roomId, WeekParity weekPattern,
             ScheduleStatus status, String courseCode, String courseTitle, String groupCode, String teacherFirstName,
@@ -174,4 +175,7 @@ public class ScheduleEntryDto implements Serializable {
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
+
+    public boolean isConflicted() { return conflicted; }
+    public void setConflicted(boolean conflicted) { this.conflicted = conflicted; }
 }
