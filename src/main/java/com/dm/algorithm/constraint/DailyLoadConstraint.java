@@ -12,14 +12,15 @@ public class DailyLoadConstraint implements HardConstraint {
     @Override
     public int check(Chromosome chromosome) {
         int violations = 0;
-        // Based on V15 migration, there are 6 slots per day (08:00 to 20:00)
-        int SLOTS_PER_DAY = 6;
 
-        // GroupId -> DayIndex -> Count
+        // GroupId -> DayIndex (1=Mon, 7=Sun) -> Count
         Map<String, Map<Integer, Integer>> dailyCounts = new HashMap<>();
 
         for (Gene gene : chromosome.getGenes()) {
-            int dayIndex = gene.getTimeslot() / SLOTS_PER_DAY;
+            if (gene.getDayOfWeek() == null)
+                continue; // Should not happen if initialized correctly
+
+            int dayIndex = gene.getDayOfWeek().getValue();
             dailyCounts
                     .computeIfAbsent(gene.getStudentGroupId(), k -> new HashMap<>())
                     .merge(dayIndex, 1, Integer::sum);

@@ -24,15 +24,15 @@ class ScheduleEvaluatorTest {
         List<HardConstraint> constraints = Arrays.asList(
                 new TeacherConflictConstraint(),
                 new RoomConflictConstraint(),
-                new GroupConflictConstraint());
+                new GroupConflictConstraint(),
+                new com.dm.algorithm.constraint.DailyLoadConstraint());
         evaluator = new ScheduleEvaluator(constraints);
     }
 
     @Test
     void testTeacherConflict() {
-        // ADD ActivityType.LAB as the 6th argument
-        Gene g1 = new Gene("C1", "T1", "R1", "G1", 0, ActivityType.LAB);
-        Gene g2 = new Gene("C2", "T1", "R2", "G2", 0, ActivityType.LAB);
+        Gene g1 = new Gene("C1", "T1", "R1", "G1", 0, java.time.DayOfWeek.MONDAY, ActivityType.LAB);
+        Gene g2 = new Gene("C2", "T1", "R2", "G2", 0, java.time.DayOfWeek.MONDAY, ActivityType.LAB);
 
         Chromosome c = new Chromosome(Arrays.asList(g1, g2));
         FitnessResult result = evaluator.evaluate(c);
@@ -42,9 +42,8 @@ class ScheduleEvaluatorTest {
 
     @Test
     void testNoConflict() {
-        // ADD ActivityType.LAB as the 6th argument
-        Gene g1 = new Gene("C1", "T1", "R1", "G1", 0, ActivityType.LAB);
-        Gene g2 = new Gene("C2", "T1", "R2", "G2", 1, ActivityType.LAB);
+        Gene g1 = new Gene("C1", "T1", "R1", "G1", 0, java.time.DayOfWeek.MONDAY, ActivityType.LAB);
+        Gene g2 = new Gene("C2", "T1", "R2", "G2", 1, java.time.DayOfWeek.MONDAY, ActivityType.LAB);
 
         Chromosome c = new Chromosome(Arrays.asList(g1, g2));
         FitnessResult result = evaluator.evaluate(c);
@@ -54,13 +53,45 @@ class ScheduleEvaluatorTest {
 
     @Test
     void testRoomConflict() {
-        // ADD ActivityType.LAB as the 6th argument
-        Gene g1 = new Gene("C1", "T1", "R1", "G1", 5, ActivityType.LAB);
-        Gene g2 = new Gene("C2", "T2", "R1", "G2", 5, ActivityType.LAB);
+        Gene g1 = new Gene("C1", "T1", "R1", "G1", 5, java.time.DayOfWeek.MONDAY, ActivityType.LAB);
+        Gene g2 = new Gene("C2", "T2", "R1", "G2", 5, java.time.DayOfWeek.MONDAY, ActivityType.LAB);
 
         Chromosome c = new Chromosome(Arrays.asList(g1, g2));
         FitnessResult result = evaluator.evaluate(c);
 
+        Assertions.assertEquals(1, result.getConflicts());
+    }
+
+    @Test
+    void testDailyLoadConflict() {
+        // Create 5 genes for the same group (G1) on the same day (MONDAY)
+        List<Gene> genes = new java.util.ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            // Distinct teachers and rooms to distinguish from other conflicts
+            genes.add(new Gene("C" + i, "T" + i, "R" + i, "G1", i, java.time.DayOfWeek.MONDAY, ActivityType.LECTURE));
+        }
+
+        Chromosome c = new Chromosome(genes);
+        FitnessResult result = evaluator.evaluate(c);
+
+        // Should have 0 hard conflicts from overlaps (all different times, rooms,
+        // teachers)
+        // But DailyLoadConstraint should see 5 activities on MONDAY
+        // Limit is 4, so 5 - 4 = 1 violation.
+        Assertions.assertEquals(1, result.getConflicts());
+    }
+
+    @Test
+    void testGroupConflict_Lectures() {
+        // Two LECTUREs for same group (G1) at same time (slot 0)
+        // Previously this might have been allowed, now should be a conflict
+        Gene g1 = new Gene("C1", "T1", "R1", "G1", 0, java.time.DayOfWeek.MONDAY, ActivityType.LECTURE);
+        Gene g2 = new Gene("C2", "T2", "R2", "G1", 0, java.time.DayOfWeek.MONDAY, ActivityType.LECTURE);
+
+        Chromosome c = new Chromosome(Arrays.asList(g1, g2));
+        FitnessResult result = evaluator.evaluate(c);
+
+        // 2 activities in same slot => 1 conflict
         Assertions.assertEquals(1, result.getConflicts());
     }
 }

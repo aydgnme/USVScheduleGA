@@ -25,6 +25,7 @@ public class CrossoverService {
 
     private Gene copyGene(Gene gene) {
         return new Gene(gene.getCourseId(), gene.getTeacherId(),
-                gene.getRoomId(), gene.getStudentGroupId(), gene.getTimeslot(), gene.getActivityType());
+                gene.getRoomId(), gene.getStudentGroupId(), gene.getTimeslot(), gene.getDayOfWeek(),
+                gene.getActivityType());
     }
 }

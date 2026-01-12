@@ -1,0 +1,249 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.dm:usvschedule-ga >------------------------
+[INFO] Building Usvschedule Ga 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.4.1:clean (default-clean) @ usvschedule-ga ---
+[INFO] Deleting /Users/aydgn/Developer/USVScheduleGA/target
+[INFO] 
+[INFO] >>> spring-boot-maven-plugin:3.5.8:run (default-cli) > test-compile @ usvschedule-ga >>>
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ usvschedule-ga ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 19 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- vaadin-maven-plugin:24.9.6:prepare-frontend (default) @ usvschedule-ga ---
+[INFO] Reflections took 919 ms to scan 245 urls, producing 14945 keys and 67755 values
+[INFO] Visited 117 classes. Took 64 ms.
+[INFO] Copying frontend resources from jar files ...
+[INFO] Visited 247 resources. Took 74 ms.
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ usvschedule-ga ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 143 source files with javac [debug release 21] to target/classes
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/mapper/CourseMapper.java:[26,18] Unmapped target property: "department".
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/mapper/CourseMapper.java:[29,18] Unmapped target property: "department".
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[19,37] com.vaadin.flow.spring.security.VaadinWebSecurity in com.vaadin.flow.spring.security has been deprecated and marked for removal
+[WARNING] /Users/aydgn/Developer/USVScheduleGA/src/main/java/com/dm/config/SecurityConfig.java:[81,74] org.springframework.security.web.util.matcher.AntPathRequestMatcher in org.springframework.security.web.util.matcher has been deprecated and marked for removal
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ usvschedule-ga ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ usvschedule-ga ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 5 source files with javac [debug release 21] to target/test-classes
+[INFO] 
+[INFO] <<< spring-boot-maven-plugin:3.5.8:run (default-cli) < test-compile @ usvschedule-ga <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.5.8:run (default-cli) @ usvschedule-ga ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.8)
+
+2026-01-12T17:38:23.759+02:00  INFO 79524 --- [  restartedMain] com.dm.Application                       : Starting Application using Java 21.0.9 with PID 79524 (/Users/aydgn/Developer/USVScheduleGA/target/classes started by aydgn in /Users/aydgn/Developer/USVScheduleGA)
+2026-01-12T17:38:23.760+02:00  INFO 79524 --- [  restartedMain] com.dm.Application                       : No active profile set, falling back to 1 default profile: "default"
+2026-01-12T17:38:23.785+02:00  INFO 79524 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-12T17:38:23.785+02:00  INFO 79524 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-12T17:38:24.227+02:00  INFO 79524 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-12T17:38:24.331+02:00  INFO 79524 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 97 ms. Found 13 JPA repository interfaces.
+2026-01-12T17:38:24.683+02:00  INFO 79524 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3080 (http)
+2026-01-12T17:38:24.691+02:00  INFO 79524 --- [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-12T17:38:24.691+02:00  INFO 79524 --- [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.49]
+2026-01-12T17:38:24.716+02:00  INFO 79524 --- [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-12T17:38:24.716+02:00  INFO 79524 --- [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 931 ms
+2026-01-12T17:38:24.814+02:00  INFO 79524 --- [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing AtmosphereFramework
+2026-01-12T17:38:27.242+02:00  INFO 79524 --- [  restartedMain] c.v.f.s.VaadinServletContextInitializer  : Search for subclasses and classes with annotations took 2257 ms
+2026-01-12T17:38:27.531+02:00  INFO 79524 --- [  restartedMain] c.v.b.d.startup.DevModeStartupListener   : Starting dev-mode updaters in /Users/aydgn/Developer/USVScheduleGA folder.
+2026-01-12T17:38:27.562+02:00  INFO 79524 --- [  restartedMain] c.v.f.s.f.s.FullDependenciesScanner      : Visited 146 classes. Took 18 ms.
+2026-01-12T17:38:27.563+02:00  INFO 79524 --- [  restartedMain] c.v.f.s.frontend.BundleValidationUtil    : Checking if a development mode bundle build is needed
+2026-01-12T17:38:27.674+02:00  INFO 79524 --- [  restartedMain] c.v.f.s.frontend.BundleValidationUtil    : A development mode bundle build is not needed
+2026-01-12T17:38:27.692+02:00  INFO 79524 --- [in-dev-server-1] c.v.f.s.frontend.TaskCopyFrontendFiles   : Copying frontend resources from jar files ...
+2026-01-12T17:38:27.726+02:00  INFO 79524 --- [in-dev-server-1] c.v.f.s.frontend.TaskCopyFrontendFiles   : Visited 22 resources. Took 34 ms.
+2026-01-12T17:38:27.771+02:00  INFO 79524 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-12T17:38:28.054+02:00  INFO 79524 --- [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@373d8754
+2026-01-12T17:38:28.055+02:00  INFO 79524 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-12T17:38:28.093+02:00  INFO 79524 --- [  restartedMain] o.f.c.internal.license.VersionPrinter    : Flyway Community Edition 9.22.3 by Redgate
+2026-01-12T17:38:28.094+02:00  INFO 79524 --- [  restartedMain] o.f.c.internal.license.VersionPrinter    : See release notes here: https://rd.gt/416ObMi
+2026-01-12T17:38:28.094+02:00  INFO 79524 --- [  restartedMain] o.f.c.internal.license.VersionPrinter    : 
+2026-01-12T17:38:28.101+02:00  INFO 79524 --- [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:sqlite:data/usvschedule.db (SQLite 3.45)
+2026-01-12T17:38:28.125+02:00  INFO 79524 --- [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 14 migrations (execution time 00:00.014s)
+2026-01-12T17:38:28.129+02:00  INFO 79524 --- [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "main": 10
+2026-01-12T17:38:28.141+02:00  INFO 79524 --- [  restartedMain] o.f.core.internal.command.DbMigrate      : Migrating schema "main" to version "11 - seed fiesc calculatoare"
+2026-01-12T17:38:28.150+02:00 ERROR 79524 --- [  restartedMain] o.f.core.internal.command.DbMigrate      : Migration of schema "main" to version "11 - seed fiesc calculatoare" failed! Changes successfully rolled back.
+2026-01-12T17:38:28.151+02:00  WARN 79524 --- [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Migration V11__seed_fiesc_calculatoare.sql failed
+-------------------------------------------------
+SQL State  : null
+Error Code : 1
+Message    : [SQLITE_ERROR] SQL error or missing database (6 values for 5 columns)
+Location   : db/migration/V11__seed_fiesc_calculatoare.sql (/Users/aydgn/Developer/USVScheduleGA/target/classes/db/migration/V11__seed_fiesc_calculatoare.sql)
+Line       : 75
+Statement  : -- 5. Insert Course Offerings (Allocations - 3 courses minimum per teacher)
+-- Group assignment logic: Assign to first C group 'C-001' (simplification)
+-- Prof 1: Ion Popescu (Programming/Math)
+INSERT INTO course_offerings (course_id, group_id, teacher_id, weekly_hours, parity) VALUES ((SELECT id FROM courses WHERE code='C-101'),(SELECT id FROM groups WHERE code LIKE 'C-%' ORDER BY id LIMIT 1),(SELECT id FROM teacher_profiles WHERE user_id=(SELECT id FROM users WHERE email='ion.popescu@usv.ro')), 2, 'BOTH', 1)
+
+2026-01-12T17:38:28.151+02:00  INFO 79524 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-12T17:38:28.152+02:00  INFO 79524 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-01-12T17:38:28.154+02:00  INFO 79524 --- [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-01-12T17:38:28.162+02:00  WARN 79524 --- [  restartedMain] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [JNA Cleaner] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+ java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1886)
+ java.base/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:71)
+ java.base/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:143)
+ java.base/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:218)
+ com.sun.jna.internal.Cleaner$CleanerThread.run(Cleaner.java:154)
+2026-01-12T17:38:28.162+02:00  WARN 79524 --- [  restartedMain] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [vaadin-file-watcher-1] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:410)
+ java.base/java.util.concurrent.LinkedTransferQueue$DualNode.await(LinkedTransferQueue.java:452)
+ java.base/java.util.concurrent.SynchronousQueue$Transferer.xferLifo(SynchronousQueue.java:194)
+ java.base/java.util.concurrent.SynchronousQueue.xfer(SynchronousQueue.java:235)
+ java.base/java.util.concurrent.SynchronousQueue.poll(SynchronousQueue.java:338)
+ java.base/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1069)
+ java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+ java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+ java.base/java.lang.Thread.run(Thread.java:1583)
+2026-01-12T17:38:28.167+02:00  INFO 79524 --- [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-12T17:38:28.177+02:00 ERROR 79524 --- [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Migration V11__seed_fiesc_calculatoare.sql failed
+-------------------------------------------------
+SQL State  : null
+Error Code : 1
+Message    : [SQLITE_ERROR] SQL error or missing database (6 values for 5 columns)
+Location   : db/migration/V11__seed_fiesc_calculatoare.sql (/Users/aydgn/Developer/USVScheduleGA/target/classes/db/migration/V11__seed_fiesc_calculatoare.sql)
+Line       : 75
+Statement  : -- 5. Insert Course Offerings (Allocations - 3 courses minimum per teacher)
+-- Group assignment logic: Assign to first C group 'C-001' (simplification)
+-- Prof 1: Ion Popescu (Programming/Math)
+INSERT INTO course_offerings (course_id, group_id, teacher_id, weekly_hours, parity) VALUES ((SELECT id FROM courses WHERE code='C-101'),(SELECT id FROM groups WHERE code LIKE 'C-%' ORDER BY id LIMIT 1),(SELECT id FROM teacher_profiles WHERE user_id=(SELECT id FROM users WHERE email='ion.popescu@usv.ro')), 2, 'BOTH', 1)
+
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:328) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:973) ~[spring-context-6.2.14.jar:6.2.14]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.14.jar:6.2.14]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.8.jar:3.5.8]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.8.jar:3.5.8]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.8.jar:3.5.8]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.8.jar:3.5.8]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.8.jar:3.5.8]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.8.jar:3.5.8]
+	at com.dm.Application.main(Application.java:29) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.5.8.jar:3.5.8]
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Migration V11__seed_fiesc_calculatoare.sql failed
+-------------------------------------------------
+SQL State  : null
+Error Code : 1
+Message    : [SQLITE_ERROR] SQL error or missing database (6 values for 5 columns)
+Location   : db/migration/V11__seed_fiesc_calculatoare.sql (/Users/aydgn/Developer/USVScheduleGA/target/classes/db/migration/V11__seed_fiesc_calculatoare.sql)
+Line       : 75
+Statement  : -- 5. Insert Course Offerings (Allocations - 3 courses minimum per teacher)
+-- Group assignment logic: Assign to first C group 'C-001' (simplification)
+-- Prof 1: Ion Popescu (Programming/Math)
+INSERT INTO course_offerings (course_id, group_id, teacher_id, weekly_hours, parity) VALUES ((SELECT id FROM courses WHERE code='C-101'),(SELECT id FROM groups WHERE code LIKE 'C-%' ORDER BY id LIMIT 1),(SELECT id FROM teacher_profiles WHERE user_id=(SELECT id FROM users WHERE email='ion.popescu@usv.ro')), 2, 'BOTH', 1)
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:315) ~[spring-beans-6.2.14.jar:6.2.14]
+	... 13 common frames omitted
+Caused by: org.flywaydb.core.internal.command.DbMigrate$FlywayMigrateException: Migration V11__seed_fiesc_calculatoare.sql failed
+-------------------------------------------------
+SQL State  : null
+Error Code : 1
+Message    : [SQLITE_ERROR] SQL error or missing database (6 values for 5 columns)
+Location   : db/migration/V11__seed_fiesc_calculatoare.sql (/Users/aydgn/Developer/USVScheduleGA/target/classes/db/migration/V11__seed_fiesc_calculatoare.sql)
+Line       : 75
+Statement  : -- 5. Insert Course Offerings (Allocations - 3 courses minimum per teacher)
+-- Group assignment logic: Assign to first C group 'C-001' (simplification)
+-- Prof 1: Ion Popescu (Programming/Math)
+INSERT INTO course_offerings (course_id, group_id, teacher_id, weekly_hours, parity) VALUES ((SELECT id FROM courses WHERE code='C-101'),(SELECT id FROM groups WHERE code LIKE 'C-%' ORDER BY id LIMIT 1),(SELECT id FROM teacher_profiles WHERE user_id=(SELECT id FROM users WHERE email='ion.popescu@usv.ro')), 2, 'BOTH', 1)
+
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:382) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$applyMigrations$1(DbMigrate.java:272) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.applyMigrations(DbMigrate.java:271) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.migrateGroup(DbMigrate.java:244) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$migrateAll$0(DbMigrate.java:139) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.jdbc.TableLockingExecutionTemplate$1.call(TableLockingExecutionTemplate.java:36) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.jdbc.TableLockingExecutionTemplate.execute(TableLockingExecutionTemplate.java:31) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.database.base.Connection.lock(Connection.java:102) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory.lock(JdbcTableSchemaHistory.java:144) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.migrateAll(DbMigrate.java:139) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.migrate(DbMigrate.java:97) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.Flyway.lambda$migrate$0(Flyway.java:188) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:213) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:140) ~[flyway-core-9.22.3.jar:na]
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66) ~[spring-boot-autoconfigure-3.5.8.jar:3.5.8]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.14.jar:6.2.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.14.jar:6.2.14]
+	... 20 common frames omitted
+Caused by: org.flywaydb.core.internal.sqlscript.FlywaySqlScriptException: Migration V11__seed_fiesc_calculatoare.sql failed
+-------------------------------------------------
+SQL State  : null
+Error Code : 1
+Message    : [SQLITE_ERROR] SQL error or missing database (6 values for 5 columns)
+Location   : db/migration/V11__seed_fiesc_calculatoare.sql (/Users/aydgn/Developer/USVScheduleGA/target/classes/db/migration/V11__seed_fiesc_calculatoare.sql)
+Line       : 75
+Statement  : -- 5. Insert Course Offerings (Allocations - 3 courses minimum per teacher)
+-- Group assignment logic: Assign to first C group 'C-001' (simplification)
+-- Prof 1: Ion Popescu (Programming/Math)
+INSERT INTO course_offerings (course_id, group_id, teacher_id, weekly_hours, parity) VALUES ((SELECT id FROM courses WHERE code='C-101'),(SELECT id FROM groups WHERE code LIKE 'C-%' ORDER BY id LIMIT 1),(SELECT id FROM teacher_profiles WHERE user_id=(SELECT id FROM users WHERE email='ion.popescu@usv.ro')), 2, 'BOTH', 1)
+
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.handleException(DefaultSqlScriptExecutor.java:267) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:222) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.execute(DefaultSqlScriptExecutor.java:126) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.executeOnce(SqlMigrationExecutor.java:68) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.lambda$execute$0(SqlMigrationExecutor.java:57) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.database.DefaultExecutionStrategy.execute(DefaultExecutionStrategy.java:27) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:56) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:374) ~[flyway-core-9.22.3.jar:na]
+	... 38 common frames omitted
+Caused by: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (6 values for 5 columns)
+	at org.sqlite.core.DB.newSQLException(DB.java:1179) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.core.DB.newSQLException(DB.java:1190) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.core.DB.throwex(DB.java:1150) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.core.NativeDB.prepare_utf8(Native Method) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.core.NativeDB.prepare(NativeDB.java:132) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.core.DB.prepare(DB.java:264) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.jdbc3.JDBC3Statement.lambda$execute$0(JDBC3Statement.java:54) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.jdbc3.JDBC3Statement.withConnectionTimeout(JDBC3Statement.java:454) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at org.sqlite.jdbc3.JDBC3Statement.execute(JDBC3Statement.java:43) ~[sqlite-jdbc-3.45.1.0.jar:na]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:95) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-6.3.3.jar:na]
+	at org.flywaydb.core.internal.jdbc.JdbcTemplate.executeStatement(JdbcTemplate.java:201) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.sqlscript.ParsedSqlStatement.execute(ParsedSqlStatement.java:95) ~[flyway-core-9.22.3.jar:na]
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:210) ~[flyway-core-9.22.3.jar:na]
+	... 44 common frames omitted
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.418 s
+[INFO] Finished at: 2026-01-12T17:38:28+02:00
+[INFO] ------------------------------------------------------------------------

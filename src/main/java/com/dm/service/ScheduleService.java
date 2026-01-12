@@ -132,4 +132,19 @@ public class ScheduleService {
             return List.of();
         return getByTeacherId(teacher.getId());
     }
+
+    public List<ScheduleEntryDto> getByGroupIds(List<Long> groupIds) {
+        return repository.findAll().stream()
+                .filter(e -> groupIds.contains(e.getOffering().getGroup().getId()))
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteByGroupIds(List<Long> groupIds) {
+        // Fetch entities first to ensure cascade or logic if needed, or delete directly
+        var entities = repository.findAll().stream()
+                .filter(e -> groupIds.contains(e.getOffering().getGroup().getId()))
+                .collect(Collectors.toList());
+        repository.deleteAll(entities);
+    }
 }
