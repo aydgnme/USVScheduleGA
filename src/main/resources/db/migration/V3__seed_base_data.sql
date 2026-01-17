@@ -1,0 +1,8 @@
+-- V3: Deprecated - Data moved to V4-V8
+-- This script is kept for backward compatibility but contains no data
+-- Migration data is now seeded by:
+-- - V4__seed_faculties_departments.sql
+-- - V5__seed_specializations_groups.sql
+-- - V6__seed_teachers.sql
+-- - V7__seed_rooms.sql
+-- - V8__seed_timeslots.sql

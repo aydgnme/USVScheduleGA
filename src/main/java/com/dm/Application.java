@@ -1,6 +1,8 @@
 package com.dm;
 
+import com.dm.config.DotenvLoader;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
@@ -13,12 +15,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and some desktop browsers.
  *
  */
+@Push
 @SpringBootApplication
-@PWA(name = "Project Base for Vaadin with Spring", shortName = "Project Base")
+@PWA(
+        name = "USV Schedule GA",
+        shortName = "USV GA",
+        offlinePath = "offline.html",
+        offlineResources = { "images/offline.png" }
+)
 @Theme("my-theme")
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
+        DotenvLoader.load();
         SpringApplication.run(Application.class, args);
     }
 }
